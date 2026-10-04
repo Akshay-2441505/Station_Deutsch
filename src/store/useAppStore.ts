@@ -1,16 +1,16 @@
 // ============================================================
-// useAppStore.ts — Zustand store with persistence
+// useAppStore.ts — Zustand store with persistence (v2)
 // ============================================================
 
 import { create } from 'zustand';
 import { persist } from 'zustand/middleware';
-import type { AppState, Attempt, Level } from '../lib/types';
+import type { AppState, Attempt, Level, SessionSummary } from '../lib/types';
 import { applyResult, freshProgress } from '../lib/scheduler';
 import { getDayOffset, setDayOffset } from '../lib/clock';
 import { generateDemoHistory } from '../lib/demo';
 import { clearState } from '../lib/storage';
 
-const CURRENT_VERSION = 1 as const;
+const CURRENT_VERSION = 2 as const;
 
 function makeInitialState(): AppState {
   return {
@@ -19,6 +19,7 @@ function makeInitialState(): AppState {
     levelSource: null,
     progress: {},
     attempts: [],
+    sessions: [],
     dayOffset: 0,
     isDemoData: false,
   };
@@ -28,6 +29,8 @@ interface AppStore extends AppState {
   // Actions
   setLevel: (level: Level, source: 'placement' | 'manual') => void;
   recordAttempt: (attempt: Omit<Attempt, 'id'>) => void;
+  recordSessionSummary: (summary: Omit<SessionSummary, 'id'>) => void;
+  importProgress: (imported: AppState) => void;
   initWordProgress: (wordId: string) => void;
   simulateTomorrow: () => void;
   loadDemoHistory: () => void;
@@ -75,6 +78,21 @@ export const useAppStore = create<AppStore>()(
         });
       },
 
+      recordSessionSummary: (summaryData) => {
+        const id = `sess-${Date.now()}-${Math.random().toString(36).slice(2, 7)}`;
+        const summary: SessionSummary = { ...summaryData, id };
+        set((state) => ({
+          sessions: [summary, ...state.sessions].slice(0, 30),
+        }));
+      },
+
+      importProgress: (imported) => {
+        set({
+          ...imported,
+          version: CURRENT_VERSION,
+        });
+      },
+
       simulateTomorrow: () => {
         const newOffset = getDayOffset() + 1;
         setDayOffset(newOffset);
@@ -82,11 +100,12 @@ export const useAppStore = create<AppStore>()(
       },
 
       loadDemoHistory: () => {
-        const { progress, attempts, isDemoData } = generateDemoHistory();
+        const { progress, attempts, sessions, isDemoData } = generateDemoHistory();
         setDayOffset(0);
         set({
           progress,
           attempts,
+          sessions,
           isDemoData,
           dayOffset: 0,
           level: 'A1',
@@ -101,8 +120,14 @@ export const useAppStore = create<AppStore>()(
       },
     }),
     {
-      name: 'station-deutsch:v1',
+      name: 'station-deutsch:v2',
       version: CURRENT_VERSION,
+      migrate: (persistedState: unknown, version: number) => {
+        if (version < 2) {
+          return makeInitialState();
+        }
+        return persistedState as AppState;
+      },
       // Custom storage with safe wrapper
       storage: {
         getItem: (key) => {

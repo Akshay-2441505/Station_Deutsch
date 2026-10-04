@@ -16,6 +16,7 @@ import SessionScreen from './screens/SessionScreen';
 import SummaryScreen from './screens/SummaryScreen';
 import ProgressScreen from './screens/ProgressScreen';
 import SettingsScreen from './screens/SettingsScreen';
+import MistakesScreen from './screens/MistakesScreen';
 
 function StorageBanner() {
   const [blocked, setBlocked] = useState(false);
@@ -81,6 +82,7 @@ export default function App() {
           <Route path="/session" element={<SessionScreen />} />
           <Route path="/summary" element={<SummaryScreen />} />
           <Route path="/progress" element={<ProgressScreen />} />
+          <Route path="/mistakes" element={<MistakesScreen />} />
           <Route path="/settings" element={<SettingsScreen />} />
           <Route path="*" element={<Navigate to="/" replace />} />
         </Routes>

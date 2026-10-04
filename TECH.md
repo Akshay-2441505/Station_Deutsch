@@ -95,6 +95,7 @@ interface Word {
     sources: string[];    // required when status is 'verified'
   };
   conflicts?: string[];   // word IDs that must never appear together as options
+  pronunciationTip?: string; // phonetic/pronunciation note
 }
 
 interface WordProgress {
@@ -117,8 +118,18 @@ interface Attempt {
   exercise: ExerciseType;
   correct: boolean;
   errorType: ErrorType | null;
+  given: string | null;
+  expected: string | null;
   isRetry: boolean;
   at: number;
+}
+
+interface SessionSummary {
+  id: string;
+  at: number;
+  accuracy: number;       // percentage 0-100
+  answered: number;
+  promotedIds: string[];
 }
 
 interface PlacementItem {
@@ -132,17 +143,18 @@ interface PlacementItem {
 }
 
 interface AppState {
-  version: 1;
+  version: 2;
   level: Level | null;
   levelSource: 'placement' | 'manual' | null;
   progress: Record<string, WordProgress>;
   attempts: Attempt[];          // keep the newest 500
+  sessions: SessionSummary[];   // newest first, cap 30
   dayOffset: number;            // for "simulate tomorrow"
   isDemoData: boolean;
 }
 ```
 
-Persist under the key `station-deutsch:v1`. If the stored `version` does not match, ignore the stored data and start fresh instead of crashing.
+Persist under the key `station-deutsch:v2`. If the stored `version` does not match, ignore the stored data and start fresh instead of crashing.
 
 ## 4. Content files
 

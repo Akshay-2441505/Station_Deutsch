@@ -239,6 +239,7 @@ export interface SessionComposerParams {
   level: Level;
   targetCount?: number; // default 10
   atMs?: number;
+  pool?: string[];
 }
 
 export interface ComposedSession {
@@ -251,7 +252,33 @@ export interface ComposedSession {
  * Returns up to `targetCount` session items.
  */
 export function composeSession(params: SessionComposerParams): SessionItem[] {
-  const { allWords, progress, level, targetCount = 10, atMs = now() } = params;
+  const { allWords, progress, level, targetCount = 10, atMs = now(), pool } = params;
+
+  if (pool && pool.length > 0) {
+    const poolSet = new Set(pool);
+    const poolWords = allWords.filter((w) => poolSet.has(w.id));
+    const items: SessionItem[] = [];
+    const recentTypes: ExerciseType[] = [];
+
+    while (items.length < targetCount && poolWords.length > 0) {
+      for (const word of poolWords) {
+        if (items.length >= targetCount) break;
+        const prog = progress[word.id];
+        const box = prog?.box ?? 1;
+        const stubborn = prog?.stubborn ?? false;
+        const exercise = chooseExercise({
+          word,
+          box: box as WordProgress['box'],
+          stubborn,
+          recentTypes,
+          level,
+        });
+        recentTypes.push(exercise);
+        items.push({ wordId: word.id, exercise, isRetry: false });
+      }
+    }
+    return items;
+  }
 
   const levelWords = allWords.filter((w) => w.level === level || progress[w.id]);
 
@@ -349,7 +376,7 @@ export function composeLearnBatch(params: {
   topic?: string;
   batchSize?: number;
 }): Word[] {
-  const { allWords, progress, level, batchSize = 6 } = params;
+  const { allWords, progress, level, batchSize = 6, topic } = params;
 
   const unseenWords = allWords.filter(
     (w) =>
@@ -359,11 +386,15 @@ export function composeLearnBatch(params: {
 
   if (unseenWords.length === 0) return [];
 
-  // Group by topic and pick the topic with the most unseen words
+  // Group by topic
   const byTopic: Record<string, Word[]> = {};
   for (const w of unseenWords) {
     if (!byTopic[w.topic]) byTopic[w.topic] = [];
     byTopic[w.topic].push(w);
+  }
+
+  if (topic && byTopic[topic] && byTopic[topic].length > 0) {
+    return byTopic[topic].slice(0, Math.min(batchSize, 8));
   }
 
   const topicWords = Object.values(byTopic).sort((a, b) => b.length - a.length)[0] ?? unseenWords;

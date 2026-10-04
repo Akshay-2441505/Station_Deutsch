@@ -43,6 +43,7 @@ export interface Word {
     sources: string[];    // required when status is 'verified'
   };
   conflicts?: string[];   // word IDs that must never appear together as options
+  pronunciationTip?: string; // phonetic/pronunciation note
 }
 
 export interface WordProgress {
@@ -65,8 +66,18 @@ export interface Attempt {
   exercise: ExerciseType;
   correct: boolean;
   errorType: ErrorType | null;
+  given: string | null;
+  expected: string | null;
   isRetry: boolean;
   at: number;
+}
+
+export interface SessionSummary {
+  id: string;
+  at: number;
+  accuracy: number;       // percentage 0-100
+  answered: number;
+  promotedIds: string[];
 }
 
 export interface PlacementItem {
@@ -80,12 +91,13 @@ export interface PlacementItem {
 }
 
 export interface AppState {
-  version: 1;
+  version: 2;
   level: Level | null;
   levelSource: 'placement' | 'manual' | null;
   progress: Record<string, WordProgress>;
-  attempts: Attempt[]; // keep the newest 500
-  dayOffset: number;   // for "simulate tomorrow"
+  attempts: Attempt[];    // keep the newest 500
+  sessions: SessionSummary[]; // newest first, cap 30
+  dayOffset: number;      // for "simulate tomorrow"
   isDemoData: boolean;
 }
 

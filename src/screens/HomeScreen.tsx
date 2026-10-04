@@ -1,5 +1,6 @@
 // ============================================================
 // HomeScreen.tsx — Home dashboard with full-bleed lemon top band
+// Topic map, weak words share, and mistakes link (V2 §2.3, §3.4, §3.5)
 // ============================================================
 import { useMemo } from 'react';
 import { useNavigate } from 'react-router-dom';
@@ -7,6 +8,7 @@ import { Settings, ChevronRight } from 'lucide-react';
 import { useAppStore } from '../store/useAppStore';
 import { now } from '../lib/clock';
 import { isDue } from '../lib/scheduler';
+import { getTopicStats, buildShareWeakWordsUrl } from '../lib/features';
 import wordsData from '../../content/words.json';
 import type { Word } from '../lib/types';
 import PillButton from '../components/PillButton';
@@ -55,13 +57,22 @@ export default function HomeScreen() {
       .slice(0, 3);
   }, [progress]);
 
-  const hasUnseenWords = useMemo(() => {
-    if (!level) return false;
-    return allWords.some((w) => w.level === level && (!progress[w.id] || progress[w.id].box === 0));
+  const topicStats = useMemo(() => {
+    if (!level) return [];
+    return getTopicStats(allWords, progress, level);
   }, [progress, level]);
 
   const canPractise = Object.values(progress).some((p) => p.box > 0);
   const isCaughtUp = canPractise && dueWords.length === 0;
+
+  const handleShareWeakWords = () => {
+    const weakWordObjects = weakWords
+      .map((w) => allWords.find((wd) => wd.id === w.wordId))
+      .filter(Boolean) as Word[];
+    if (weakWordObjects.length > 0) {
+      window.open(buildShareWeakWordsUrl(weakWordObjects), '_blank');
+    }
+  };
 
   return (
     <div className="screen screen--white" style={{ padding: 0 }}>
@@ -170,8 +181,8 @@ export default function HomeScreen() {
 
       {/* Main body on white */}
       <div className="content" style={{ padding: '24px var(--side-pad)', flex: 1 }}>
-        {/* Practice actions */}
-        <div style={{ display: 'flex', flexDirection: 'column', gap: 12, marginBottom: 28 }}>
+        {/* Practice action */}
+        <div style={{ marginBottom: 28 }}>
           {canPractise ? (
             <PillButton variant="primary" id="practise-btn" onClick={() => navigate('/session')}>
               {isCaughtUp ? 'Practise anyway' : 'Practise'}
@@ -181,20 +192,74 @@ export default function HomeScreen() {
               Practise
             </PillButton>
           )}
-          {hasUnseenWords && (
-            <PillButton variant="outline" id="learn-btn" onClick={() => navigate('/learn')}>
-              Learn new words
-            </PillButton>
-          )}
         </div>
 
-        {/* Weak words */}
+        {/* 3.4 Topic map */}
+        <section aria-labelledby="topics-heading" style={{ marginBottom: 28 }}>
+          <h2 id="topics-heading" className="text-small" style={{ color: 'var(--grey)', marginBottom: 12 }}>
+            Topics
+          </h2>
+          <div style={{ display: 'flex', flexDirection: 'column', gap: 10 }}>
+            {topicStats.map((stat) => {
+              const wordsInTopic = allWords.filter((w) => w.topic === stat.topic && w.level === level);
+              return (
+                <button
+                  key={stat.topic}
+                  onClick={() => {
+                    if (stat.hasUnseen) {
+                      navigate('/learn', { state: { topic: stat.topic } });
+                    } else {
+                      navigate('/session', { state: { pool: wordsInTopic.map((w) => w.id) } });
+                    }
+                  }}
+                  style={{
+                    background: 'var(--white)',
+                    border: '1.5px solid var(--line)',
+                    borderRadius: 16,
+                    padding: '14px 16px',
+                    textAlign: 'left',
+                    cursor: 'pointer',
+                    display: 'flex',
+                    flexDirection: 'column',
+                    gap: 6,
+                  }}
+                >
+                  <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
+                    <span style={{ fontWeight: 600, fontSize: 16, color: 'var(--black)' }}>
+                      {stat.title}
+                    </span>
+                    <span className="text-small" style={{ color: 'var(--grey)' }}>
+                      {stat.learned} of {stat.total} words
+                    </span>
+                  </div>
+                  {!stat.hasUnseen ? (
+                    <span style={{ fontSize: 13, color: 'var(--grey)' }}>
+                      You've seen every {stat.title} word. <span style={{ fontWeight: 600, color: 'var(--black)' }}>Practise them</span>
+                    </span>
+                  ) : (
+                    <div style={{ height: 4, background: 'var(--line)', borderRadius: 2, overflow: 'hidden' }}>
+                      <div
+                        style={{
+                          height: '100%',
+                          background: 'var(--black)',
+                          width: `${stat.total > 0 ? (stat.learned / stat.total) * 100 : 0}%`,
+                        }}
+                      />
+                    </div>
+                  )}
+                </button>
+              );
+            })}
+          </div>
+        </section>
+
+        {/* Weak words & Share */}
         {weakWords.length > 0 && (
           <section aria-labelledby="weak-heading" style={{ marginBottom: 24 }}>
             <h2 id="weak-heading" className="text-small" style={{ color: 'var(--grey)', marginBottom: 8 }}>
               Weak words ({weakWords.length})
             </h2>
-            <div className="stack">
+            <div className="stack" style={{ marginBottom: 12 }}>
               {weakWords.map((w) => {
                 const word = allWords.find((wd) => wd.id === w.wordId);
                 const totalMissed = w.errorCounts.article + w.errorCounts.meaning + w.errorCounts.spelling;
@@ -208,30 +273,67 @@ export default function HomeScreen() {
                 ) : null;
               })}
             </div>
+            {/* 3.5 Share weak words */}
+            <button
+              onClick={handleShareWeakWords}
+              style={{
+                background: 'none',
+                border: 'none',
+                cursor: 'pointer',
+                color: 'var(--grey)',
+                fontSize: 14,
+                fontWeight: 600,
+                textDecoration: 'underline',
+                textAlign: 'left',
+                padding: 0,
+              }}
+              id="share-weak-btn"
+            >
+              Share my weak words
+            </button>
           </section>
         )}
 
-        {/* Progress link */}
-        <button
-          className="text-button"
-          style={{
-            background: 'none',
-            border: 'none',
-            cursor: 'pointer',
-            color: 'var(--grey)',
-            textAlign: 'left',
-            display: 'inline-flex',
-            alignItems: 'center',
-            gap: 4,
-            width: 'fit-content',
-            padding: 0,
-            marginTop: 'auto',
-          }}
-          id="progress-link"
-          onClick={() => navigate('/progress')}
-        >
-          Progress <ChevronRight size={18} />
-        </button>
+        {/* Links row */}
+        <div style={{ display: 'flex', gap: 24, marginTop: 'auto', paddingTop: 16 }}>
+          <button
+            className="text-button"
+            style={{
+              background: 'none',
+              border: 'none',
+              cursor: 'pointer',
+              color: 'var(--grey)',
+              textAlign: 'left',
+              display: 'inline-flex',
+              alignItems: 'center',
+              gap: 4,
+              padding: 0,
+            }}
+            id="mistakes-link"
+            onClick={() => navigate('/mistakes')}
+          >
+            My mistakes <ChevronRight size={18} />
+          </button>
+
+          <button
+            className="text-button"
+            style={{
+              background: 'none',
+              border: 'none',
+              cursor: 'pointer',
+              color: 'var(--grey)',
+              textAlign: 'left',
+              display: 'inline-flex',
+              alignItems: 'center',
+              gap: 4,
+              padding: 0,
+            }}
+            id="progress-link"
+            onClick={() => navigate('/progress')}
+          >
+            Progress <ChevronRight size={18} />
+          </button>
+        </div>
       </div>
     </div>
   );

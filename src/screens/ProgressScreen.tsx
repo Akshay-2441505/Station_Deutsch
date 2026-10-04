@@ -9,6 +9,7 @@ import wordsData from '../../content/words.json';
 import type { Word } from '../lib/types';
 import TopBar from '../components/TopBar';
 import PillButton from '../components/PillButton';
+import { ChevronRight } from 'lucide-react';
 
 const allWords = wordsData as Word[];
 
@@ -123,6 +124,28 @@ export default function ProgressScreen() {
             ))}
           </div>
         </section>
+
+        <div className="divider" />
+
+        <button
+          className="text-button"
+          style={{
+            background: 'none',
+            border: 'none',
+            cursor: 'pointer',
+            color: 'var(--lemon)',
+            textAlign: 'left',
+            display: 'inline-flex',
+            alignItems: 'center',
+            gap: 4,
+            width: 'fit-content',
+            padding: '8px 0',
+          }}
+          id="my-mistakes-link"
+          onClick={() => navigate('/mistakes')}
+        >
+          My mistakes <ChevronRight size={18} />
+        </button>
       </div>
     </div>
   );

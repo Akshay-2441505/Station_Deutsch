@@ -24,15 +24,19 @@ const wordMap = Object.fromEntries(allWords.map((w) => [w.id, w]));
 export default function SessionScreen() {
   const navigate = useNavigate();
   const location = useLocation();
-  const locationState = location.state as { learnBatchIds?: string[] } | null;
+  const locationState = location.state as { learnBatchIds?: string[]; pool?: string[] } | null;
 
   const level = useAppStore((s) => s.level);
   const progress = useAppStore((s) => s.progress);
   const recordAttempt = useAppStore((s) => s.recordAttempt);
+  const recordSessionSummary = useAppStore((s) => s.recordSessionSummary);
 
   // Compose session
   const [items, setItems] = useState<SessionItem[]>(() => {
     if (!level) return [];
+    if (locationState?.pool && locationState.pool.length > 0) {
+      return composeSession({ allWords, progress, level, pool: locationState.pool });
+    }
     if (locationState?.learnBatchIds) {
       const batchWords = locationState.learnBatchIds
         .map((id) => wordMap[id])
@@ -162,11 +166,25 @@ export default function SessionScreen() {
     const isCorrect = gradeResult.outcome === 'correct';
     const errorType = gradeResult.outcome === 'error' ? gradeResult.errorType : null;
 
+    let expectedStr = currentWord.en;
+    let givenStr: string | null = chosenText ?? null;
+    if (currentItem.exercise === 'typed' || currentItem.exercise === 'fill') {
+      expectedStr = currentWord.de;
+      givenStr = typedWord;
+    } else if (currentItem.exercise === 'article') {
+      expectedStr = currentWord.article ?? '';
+      givenStr = chosenArticle;
+    } else if (currentItem.exercise === 'mcq_en_de') {
+      expectedStr = currentWord.article ? `${currentWord.article} ${currentWord.de}` : currentWord.de;
+    }
+
     recordAttempt({
       wordId: currentWord.id,
       exercise: currentItem.exercise,
       correct: isCorrect,
       errorType,
+      given: givenStr,
+      expected: expectedStr,
       isRetry: currentItem.isRetry,
       at: now(),
     });
@@ -197,7 +215,16 @@ export default function SessionScreen() {
 
     const nextIndex = itemIndex + 1;
     if (nextIndex >= items.length) {
-      navigate('/summary', { state: { results: sessionResults } });
+      const totalAnswered = sessionResults.length;
+      const correctCount = sessionResults.filter((r) => r.correct).length;
+      const accuracy = totalAnswered > 0 ? Math.round((correctCount / totalAnswered) * 100) : 0;
+      recordSessionSummary({
+        at: now(),
+        accuracy,
+        answered: totalAnswered,
+        promotedIds: sessionResults.filter((r) => r.correct).map((r) => r.wordId),
+      });
+      navigate('/summary', { state: { results: sessionResults, accuracy } });
     } else {
       setItemIndex(nextIndex);
     }
@@ -278,6 +305,8 @@ export default function SessionScreen() {
         exercise: 'match',
         correct: isCorrect,
         errorType: isCorrect ? null : 'meaning',
+        given: isCorrect ? p.en : 'mismatched pair',
+        expected: p.en,
         isRetry: currentItem.isRetry,
         at: now(),
       });
@@ -295,6 +324,14 @@ export default function SessionScreen() {
   const fillSentence = currentItem.exercise === 'fill'
     ? currentWord.sentences.find((s) => s.level === level) ?? currentWord.sentences[0]
     : null;
+
+  const TOPIC_LABELS: Record<string, string> = {
+    body: 'Body',
+    symptoms: 'Symptoms',
+    care: 'Care actions',
+    ward: 'Ward & Equipment',
+    patient: 'Patient interaction',
+  };
 
   return (
     <div className="screen screen--white">
@@ -332,6 +369,22 @@ export default function SessionScreen() {
 
       <div className="content" style={{ opacity: feedback ? 0.4 : 1, transition: 'opacity 0.1s' }}>
         <ExerciseErrorBoundary exerciseKey={`${currentItem.wordId}-${itemIndex}`} onSkip={handleContinue}>
+          {/* Ward Context: Topic label */}
+          <div style={{ marginBottom: 12 }}>
+            <span
+              className="chip"
+              style={{
+                background: '#F0F0F0',
+                color: 'var(--grey)',
+                fontSize: 12,
+                fontWeight: 600,
+                height: 24,
+                padding: '0 10px',
+              }}
+            >
+              {TOPIC_LABELS[currentWord.topic] ?? currentWord.topic}
+            </span>
+          </div>
           {/* MCQ de→en */}
           {currentItem.exercise === 'mcq_de_en' && (
             <>

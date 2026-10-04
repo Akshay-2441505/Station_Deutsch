@@ -2,11 +2,11 @@
 // LearnScreen.tsx — flashcard batch learning
 // ============================================================
 import { useState, useMemo } from 'react';
-import { useNavigate } from 'react-router-dom';
+import { useNavigate, useLocation } from 'react-router-dom';
 import { useAppStore } from '../store/useAppStore';
 import { composeLearnBatch } from '../lib/session';
 import wordsData from '../../content/words.json';
-import type { Word } from '../lib/types';
+import type { Word, Topic } from '../lib/types';
 import TopBar from '../components/TopBar';
 import ArticleChip from '../components/ArticleChip';
 import AudioButton from '../components/AudioButton';
@@ -14,15 +14,26 @@ import PillButton from '../components/PillButton';
 
 const allWords = wordsData as Word[];
 
+const TOPIC_LABELS: Record<string, string> = {
+  body: 'Body',
+  symptoms: 'Symptoms',
+  care: 'Care actions',
+  ward: 'Ward & Equipment',
+  patient: 'Patient interaction',
+};
+
 export default function LearnScreen() {
   const navigate = useNavigate();
+  const location = useLocation();
+  const locationTopic = (location.state as { topic?: Topic } | null)?.topic;
+
   const level = useAppStore((s) => s.level);
   const progress = useAppStore((s) => s.progress);
 
   const batch = useMemo(() => {
     if (!level) return [];
-    return composeLearnBatch({ allWords, progress, level });
-  }, [level, progress]);
+    return composeLearnBatch({ allWords, progress, level, topic: locationTopic });
+  }, [level, progress, locationTopic]);
 
   const [cardIndex, setCardIndex] = useState(0);
   const [flipped, setFlipped] = useState(false);
@@ -76,11 +87,22 @@ export default function LearnScreen() {
           />
 
           <div className="content" style={{ justifyContent: 'center' }}>
-            {word.article && (
-              <div style={{ marginBottom: 16 }}>
-                <ArticleChip article={word.article} />
-              </div>
-            )}
+            <div style={{ display: 'flex', alignItems: 'center', gap: 8, marginBottom: 16 }}>
+              {word.article && <ArticleChip article={word.article} />}
+              <span
+                className="chip"
+                style={{
+                  background: 'rgba(0,0,0,0.08)',
+                  color: 'var(--black)',
+                  fontSize: 12,
+                  fontWeight: 600,
+                  height: 28,
+                  padding: '0 10px',
+                }}
+              >
+                {TOPIC_LABELS[word.topic] ?? word.topic}
+              </span>
+            </div>
             <h1
               className={word.de.length > 10 ? 'text-headword text-headword--long' : 'text-headword'}
               lang="de"
@@ -107,6 +129,21 @@ export default function LearnScreen() {
           />
 
           <div className="content">
+            <div style={{ marginBottom: 12 }}>
+              <span
+                className="chip"
+                style={{
+                  background: 'rgba(0,0,0,0.08)',
+                  color: 'var(--black)',
+                  fontSize: 12,
+                  fontWeight: 600,
+                  height: 24,
+                  padding: '0 10px',
+                }}
+              >
+                {TOPIC_LABELS[word.topic] ?? word.topic}
+              </span>
+            </div>
             <h1 className="text-meaning" style={{ marginBottom: 24 }}>{word.en}</h1>
 
             {/* Tabs */}

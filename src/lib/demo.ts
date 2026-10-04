@@ -23,7 +23,7 @@ const DEMO_BASE_MS = 1_700_000_000_000;
 const ONE_DAY_MS = 86_400_000;
 const ONE_HOUR_MS = 3_600_000;
 
-export function generateDemoHistory(): Pick<AppState, 'progress' | 'attempts' | 'isDemoData'> {
+export function generateDemoHistory(): Pick<AppState, 'progress' | 'attempts' | 'sessions' | 'isDemoData'> {
   const progress: Record<string, WordProgress> = {};
   const attempts: Attempt[] = [];
 
@@ -91,6 +91,8 @@ export function generateDemoHistory(): Pick<AppState, 'progress' | 'attempts' | 
       exercise: act.exercise,
       correct: act.correct,
       errorType: act.errorType,
+      given: act.correct ? null : (act.errorType === 'article' ? 'der' : 'pain'),
+      expected: act.correct ? null : (act.errorType === 'article' ? 'die' : 'fever'),
       isRetry: false,
       at,
     });
@@ -103,5 +105,15 @@ export function generateDemoHistory(): Pick<AppState, 'progress' | 'attempts' | 
     }
   }
 
-  return { progress, attempts, isDemoData: true };
+  const sessions = [
+    {
+      id: 'demo-s1',
+      at: DEMO_BASE_MS + 4 * ONE_DAY_MS + 19 * ONE_HOUR_MS,
+      accuracy: 67,
+      answered: 6,
+      promotedIds: ['kopf', 'arm'],
+    },
+  ];
+
+  return { progress, attempts, sessions, isDemoData: true };
 }
