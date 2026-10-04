@@ -1,0 +1,1757 @@
+[
+  {
+    "id": "kopf",
+    "de": "Kopf",
+    "article": "der",
+    "pos": "noun",
+    "plural": "Köpfe",
+    "pluralOnly": false,
+    "en": "head",
+    "topic": "body",
+    "level": "A1",
+    "sentences": [
+      {
+        "level": "A1",
+        "de": "Mein Kopf tut weh.",
+        "en": "My head hurts.",
+        "blank": "Kopf"
+      }
+    ],
+    "tip": null,
+    "verification": {
+      "status": "verified",
+      "sources": [
+        "Goethe-Institut A1/A2 Wortliste",
+        "Duden"
+      ]
+    }
+  },
+  {
+    "id": "arm",
+    "de": "Arm",
+    "article": "der",
+    "pos": "noun",
+    "plural": "Arme",
+    "pluralOnly": false,
+    "en": "arm",
+    "topic": "body",
+    "level": "A1",
+    "sentences": [
+      {
+        "level": "A1",
+        "de": "Mein Arm tut weh.",
+        "en": "My arm hurts.",
+        "blank": "Arm"
+      }
+    ],
+    "tip": null,
+    "verification": {
+      "status": "verified",
+      "sources": [
+        "Goethe-Institut A1/A2 Wortliste",
+        "Duden"
+      ]
+    }
+  },
+  {
+    "id": "bein",
+    "de": "Bein",
+    "article": "das",
+    "pos": "noun",
+    "plural": "Beine",
+    "pluralOnly": false,
+    "en": "leg",
+    "topic": "body",
+    "level": "A1",
+    "sentences": [
+      {
+        "level": "A1",
+        "de": "Das Bein ist gebrochen.",
+        "en": "The leg is broken.",
+        "blank": "Bein"
+      }
+    ],
+    "tip": null,
+    "verification": {
+      "status": "verified",
+      "sources": [
+        "Goethe-Institut A1/A2 Wortliste",
+        "Duden"
+      ]
+    }
+  },
+  {
+    "id": "hand",
+    "de": "Hand",
+    "article": "die",
+    "pos": "noun",
+    "plural": "Hände",
+    "pluralOnly": false,
+    "en": "hand",
+    "topic": "body",
+    "level": "A1",
+    "sentences": [
+      {
+        "level": "A1",
+        "de": "Die Hand ist verletzt.",
+        "en": "The hand is injured.",
+        "blank": "Hand"
+      }
+    ],
+    "tip": null,
+    "verification": {
+      "status": "verified",
+      "sources": [
+        "Goethe-Institut A1/A2 Wortliste",
+        "Duden"
+      ]
+    }
+  },
+  {
+    "id": "auge",
+    "de": "Auge",
+    "article": "das",
+    "pos": "noun",
+    "plural": "Augen",
+    "pluralOnly": false,
+    "en": "eye",
+    "topic": "body",
+    "level": "A1",
+    "sentences": [
+      {
+        "level": "A1",
+        "de": "Mein Auge ist rot.",
+        "en": "My eye is red.",
+        "blank": "Auge"
+      }
+    ],
+    "tip": null,
+    "verification": {
+      "status": "verified",
+      "sources": [
+        "Goethe-Institut A1/A2 Wortliste",
+        "Duden"
+      ]
+    }
+  },
+  {
+    "id": "ohr",
+    "de": "Ohr",
+    "article": "das",
+    "pos": "noun",
+    "plural": "Ohren",
+    "pluralOnly": false,
+    "en": "ear",
+    "topic": "body",
+    "level": "A1",
+    "sentences": [
+      {
+        "level": "A1",
+        "de": "Mein Ohr tut weh.",
+        "en": "My ear hurts.",
+        "blank": "Ohr"
+      }
+    ],
+    "tip": null,
+    "verification": {
+      "status": "verified",
+      "sources": [
+        "Goethe-Institut A1/A2 Wortliste",
+        "Duden"
+      ]
+    }
+  },
+  {
+    "id": "mund",
+    "de": "Mund",
+    "article": "der",
+    "pos": "noun",
+    "plural": "Münder",
+    "pluralOnly": false,
+    "en": "mouth",
+    "topic": "body",
+    "level": "A1",
+    "sentences": [
+      {
+        "level": "A1",
+        "de": "Öffnen Sie den Mund.",
+        "en": "Open your mouth.",
+        "blank": "Mund"
+      }
+    ],
+    "tip": null,
+    "verification": {
+      "status": "verified",
+      "sources": [
+        "Goethe-Institut A1/A2 Wortliste",
+        "Duden"
+      ]
+    }
+  },
+  {
+    "id": "bauch",
+    "de": "Bauch",
+    "article": "der",
+    "pos": "noun",
+    "plural": "Bäuche",
+    "pluralOnly": false,
+    "en": "stomach / abdomen",
+    "topic": "body",
+    "level": "A1",
+    "sentences": [
+      {
+        "level": "A1",
+        "de": "Mein Bauch tut weh.",
+        "en": "My stomach hurts.",
+        "blank": "Bauch"
+      }
+    ],
+    "tip": null,
+    "verification": {
+      "status": "verified",
+      "sources": [
+        "Goethe-Institut A1/A2 Wortliste",
+        "Duden"
+      ]
+    }
+  },
+  {
+    "id": "fieber",
+    "de": "Fieber",
+    "article": "das",
+    "pos": "noun",
+    "plural": null,
+    "pluralOnly": false,
+    "en": "fever",
+    "topic": "symptoms",
+    "level": "A1",
+    "sentences": [
+      {
+        "level": "A1",
+        "de": "Der Patient hat hohes Fieber.",
+        "en": "The patient has a high fever.",
+        "blank": "Fieber"
+      }
+    ],
+    "tip": null,
+    "verification": {
+      "status": "verified",
+      "sources": [
+        "Goethe-Institut A1/A2 Wortliste",
+        "Duden"
+      ]
+    }
+  },
+  {
+    "id": "schmerz",
+    "de": "Schmerz",
+    "article": "der",
+    "pos": "noun",
+    "plural": "Schmerzen",
+    "pluralOnly": false,
+    "en": "pain",
+    "topic": "symptoms",
+    "level": "A1",
+    "sentences": [
+      {
+        "level": "A1",
+        "de": "Ich habe Schmerzen.",
+        "en": "I am in pain.",
+        "blank": "Schmerzen"
+      }
+    ],
+    "tip": null,
+    "verification": {
+      "status": "verified",
+      "sources": [
+        "Goethe-Institut A1/A2 Wortliste",
+        "Duden"
+      ]
+    }
+  },
+  {
+    "id": "husten",
+    "de": "Husten",
+    "article": "der",
+    "pos": "noun",
+    "plural": null,
+    "pluralOnly": false,
+    "en": "cough",
+    "topic": "symptoms",
+    "level": "A1",
+    "sentences": [
+      {
+        "level": "A1",
+        "de": "Der Patient hat Husten.",
+        "en": "The patient has a cough.",
+        "blank": "Husten"
+      }
+    ],
+    "tip": null,
+    "verification": {
+      "status": "verified",
+      "sources": [
+        "Goethe-Institut A1/A2 Wortliste",
+        "Duden"
+      ]
+    }
+  },
+  {
+    "id": "schwindel",
+    "de": "Schwindel",
+    "article": "der",
+    "pos": "noun",
+    "plural": null,
+    "pluralOnly": false,
+    "en": "dizziness",
+    "topic": "symptoms",
+    "level": "A1",
+    "sentences": [
+      {
+        "level": "A1",
+        "de": "Ich habe Schwindel.",
+        "en": "I feel dizzy.",
+        "blank": "Schwindel"
+      }
+    ],
+    "tip": null,
+    "verification": {
+      "status": "verified",
+      "sources": [
+        "Goethe-Institut A1/A2 Wortliste",
+        "Duden"
+      ]
+    }
+  },
+  {
+    "id": "uebelkeit",
+    "de": "Übelkeit",
+    "article": "die",
+    "pos": "noun",
+    "plural": null,
+    "pluralOnly": false,
+    "en": "nausea",
+    "topic": "symptoms",
+    "level": "A1",
+    "sentences": [
+      {
+        "level": "A1",
+        "de": "Die Patientin hat Übelkeit.",
+        "en": "The patient has nausea.",
+        "blank": "Übelkeit"
+      }
+    ],
+    "tip": null,
+    "verification": {
+      "status": "verified",
+      "sources": [
+        "Goethe-Institut A1/A2 Wortliste",
+        "Duden"
+      ]
+    }
+  },
+  {
+    "id": "allergie",
+    "de": "Allergie",
+    "article": "die",
+    "pos": "noun",
+    "plural": "Allergien",
+    "pluralOnly": false,
+    "en": "allergy",
+    "topic": "symptoms",
+    "level": "A1",
+    "sentences": [
+      {
+        "level": "A1",
+        "de": "Haben Sie eine Allergie?",
+        "en": "Do you have an allergy?",
+        "blank": "Allergie"
+      }
+    ],
+    "tip": null,
+    "verification": {
+      "status": "verified",
+      "sources": [
+        "Goethe-Institut A1/A2 Wortliste",
+        "Duden"
+      ]
+    }
+  },
+  {
+    "id": "waschen",
+    "de": "waschen",
+    "article": null,
+    "pos": "verb",
+    "plural": null,
+    "pluralOnly": false,
+    "en": "to wash",
+    "topic": "care",
+    "level": "A1",
+    "sentences": [
+      {
+        "level": "A1",
+        "de": "Ich wasche die Hände.",
+        "en": "I wash my hands.",
+        "blank": "wasche"
+      }
+    ],
+    "tip": null,
+    "verification": {
+      "status": "verified",
+      "sources": [
+        "Goethe-Institut A1/A2 Wortliste",
+        "Duden"
+      ]
+    }
+  },
+  {
+    "id": "messen",
+    "de": "messen",
+    "article": null,
+    "pos": "verb",
+    "plural": null,
+    "pluralOnly": false,
+    "en": "to measure / to take",
+    "topic": "care",
+    "level": "A1",
+    "sentences": [
+      {
+        "level": "A1",
+        "de": "Ich messe den Blutdruck.",
+        "en": "I take the blood pressure.",
+        "blank": "messe"
+      }
+    ],
+    "tip": null,
+    "verification": {
+      "status": "verified",
+      "sources": [
+        "Goethe-Institut A1/A2 Wortliste",
+        "Duden"
+      ]
+    }
+  },
+  {
+    "id": "geben",
+    "de": "geben",
+    "article": null,
+    "pos": "verb",
+    "plural": null,
+    "pluralOnly": false,
+    "en": "to give",
+    "topic": "care",
+    "level": "A1",
+    "sentences": [
+      {
+        "level": "A1",
+        "de": "Ich gebe dem Patienten die Tablette.",
+        "en": "I give the patient the tablet.",
+        "blank": "gebe"
+      }
+    ],
+    "tip": null,
+    "verification": {
+      "status": "verified",
+      "sources": [
+        "Goethe-Institut A1/A2 Wortliste",
+        "Duden"
+      ]
+    }
+  },
+  {
+    "id": "helfen",
+    "de": "helfen",
+    "article": null,
+    "pos": "verb",
+    "plural": null,
+    "pluralOnly": false,
+    "en": "to help",
+    "topic": "care",
+    "level": "A1",
+    "sentences": [
+      {
+        "level": "A1",
+        "de": "Ich helfe Ihnen.",
+        "en": "I will help you.",
+        "blank": "helfe"
+      }
+    ],
+    "tip": null,
+    "verification": {
+      "status": "verified",
+      "sources": [
+        "Goethe-Institut A1/A2 Wortliste",
+        "Duden"
+      ]
+    }
+  },
+  {
+    "id": "verbinden",
+    "de": "verbinden",
+    "article": null,
+    "pos": "verb",
+    "plural": null,
+    "pluralOnly": false,
+    "en": "to bandage / to dress (a wound)",
+    "topic": "care",
+    "level": "A1",
+    "sentences": [
+      {
+        "level": "A1",
+        "de": "Ich verbinde die Wunde.",
+        "en": "I dress the wound.",
+        "blank": "verbinde"
+      }
+    ],
+    "tip": null,
+    "verification": {
+      "status": "verified",
+      "sources": [
+        "Goethe-Institut A1/A2 Wortliste",
+        "Duden"
+      ]
+    }
+  },
+  {
+    "id": "lagerung",
+    "de": "Lagerung",
+    "article": "die",
+    "pos": "noun",
+    "plural": "Lagerungen",
+    "pluralOnly": false,
+    "en": "positioning (of a patient)",
+    "topic": "care",
+    "level": "A1",
+    "sentences": [
+      {
+        "level": "A1",
+        "de": "Die Lagerung ist wichtig.",
+        "en": "Positioning is important.",
+        "blank": "Lagerung"
+      }
+    ],
+    "tip": null,
+    "verification": {
+      "status": "verified",
+      "sources": [
+        "Goethe-Institut A1/A2 Wortliste",
+        "Duden"
+      ]
+    }
+  },
+  {
+    "id": "bett",
+    "de": "Bett",
+    "article": "das",
+    "pos": "noun",
+    "plural": "Betten",
+    "pluralOnly": false,
+    "en": "bed",
+    "topic": "ward",
+    "level": "A1",
+    "sentences": [
+      {
+        "level": "A1",
+        "de": "Der Patient liegt im Bett.",
+        "en": "The patient is lying in bed.",
+        "blank": "Bett"
+      }
+    ],
+    "tip": null,
+    "verification": {
+      "status": "verified",
+      "sources": [
+        "Goethe-Institut A1/A2 Wortliste",
+        "Duden"
+      ]
+    }
+  },
+  {
+    "id": "zimmer",
+    "de": "Zimmer",
+    "article": "das",
+    "pos": "noun",
+    "plural": "Zimmer",
+    "pluralOnly": false,
+    "en": "room",
+    "topic": "ward",
+    "level": "A1",
+    "sentences": [
+      {
+        "level": "A1",
+        "de": "Das Zimmer ist sauber.",
+        "en": "The room is clean.",
+        "blank": "Zimmer"
+      }
+    ],
+    "tip": null,
+    "verification": {
+      "status": "verified",
+      "sources": [
+        "Goethe-Institut A1/A2 Wortliste",
+        "Duden"
+      ]
+    }
+  },
+  {
+    "id": "station",
+    "de": "Station",
+    "article": "die",
+    "pos": "noun",
+    "plural": "Stationen",
+    "pluralOnly": false,
+    "en": "ward / unit",
+    "topic": "ward",
+    "level": "A1",
+    "sentences": [
+      {
+        "level": "A1",
+        "de": "Ich arbeite auf der Station.",
+        "en": "I work on the ward.",
+        "blank": "Station"
+      }
+    ],
+    "tip": null,
+    "verification": {
+      "status": "verified",
+      "sources": [
+        "Goethe-Institut A1/A2 Wortliste",
+        "Duden"
+      ]
+    }
+  },
+  {
+    "id": "rollstuhl",
+    "de": "Rollstuhl",
+    "article": "der",
+    "pos": "noun",
+    "plural": "Rollstühle",
+    "pluralOnly": false,
+    "en": "wheelchair",
+    "topic": "ward",
+    "level": "A1",
+    "sentences": [
+      {
+        "level": "A1",
+        "de": "Der Patient sitzt im Rollstuhl.",
+        "en": "The patient is sitting in a wheelchair.",
+        "blank": "Rollstuhl"
+      }
+    ],
+    "tip": null,
+    "verification": {
+      "status": "verified",
+      "sources": [
+        "Goethe-Institut A1/A2 Wortliste",
+        "Duden"
+      ]
+    }
+  },
+  {
+    "id": "klingel",
+    "de": "Klingel",
+    "article": "die",
+    "pos": "noun",
+    "plural": "Klingeln",
+    "pluralOnly": false,
+    "en": "call bell",
+    "topic": "ward",
+    "level": "A1",
+    "sentences": [
+      {
+        "level": "A1",
+        "de": "Drücken Sie die Klingel.",
+        "en": "Press the call bell.",
+        "blank": "Klingel"
+      }
+    ],
+    "tip": null,
+    "verification": {
+      "status": "verified",
+      "sources": [
+        "Goethe-Institut A1/A2 Wortliste",
+        "Duden"
+      ]
+    }
+  },
+  {
+    "id": "infusion",
+    "de": "Infusion",
+    "article": "die",
+    "pos": "noun",
+    "plural": "Infusionen",
+    "pluralOnly": false,
+    "en": "infusion / drip",
+    "topic": "ward",
+    "level": "A1",
+    "sentences": [
+      {
+        "level": "A1",
+        "de": "Die Infusion läuft.",
+        "en": "The drip is running.",
+        "blank": "Infusion"
+      }
+    ],
+    "tip": null,
+    "verification": {
+      "status": "verified",
+      "sources": [
+        "Goethe-Institut A1/A2 Wortliste",
+        "Duden"
+      ]
+    }
+  },
+  {
+    "id": "name",
+    "de": "Name",
+    "article": "der",
+    "pos": "noun",
+    "plural": "Namen",
+    "pluralOnly": false,
+    "en": "name",
+    "topic": "patient",
+    "level": "A1",
+    "sentences": [
+      {
+        "level": "A1",
+        "de": "Wie ist Ihr Name?",
+        "en": "What is your name?",
+        "blank": "Name"
+      }
+    ],
+    "tip": null,
+    "verification": {
+      "status": "verified",
+      "sources": [
+        "Goethe-Institut A1/A2 Wortliste",
+        "Duden"
+      ]
+    }
+  },
+  {
+    "id": "alter",
+    "de": "Alter",
+    "article": "das",
+    "pos": "noun",
+    "plural": null,
+    "pluralOnly": false,
+    "en": "age",
+    "topic": "patient",
+    "level": "A1",
+    "sentences": [
+      {
+        "level": "A1",
+        "de": "Wie alt sind Sie?",
+        "en": "How old are you?",
+        "blank": "alt"
+      }
+    ],
+    "tip": null,
+    "verification": {
+      "status": "verified",
+      "sources": [
+        "Goethe-Institut A1/A2 Wortliste",
+        "Duden"
+      ]
+    }
+  },
+  {
+    "id": "adresse",
+    "de": "Adresse",
+    "article": "die",
+    "pos": "noun",
+    "plural": "Adressen",
+    "pluralOnly": false,
+    "en": "address",
+    "topic": "patient",
+    "level": "A1",
+    "sentences": [
+      {
+        "level": "A1",
+        "de": "Was ist Ihre Adresse?",
+        "en": "What is your address?",
+        "blank": "Adresse"
+      }
+    ],
+    "tip": null,
+    "verification": {
+      "status": "verified",
+      "sources": [
+        "Goethe-Institut A1/A2 Wortliste",
+        "Duden"
+      ]
+    }
+  },
+  {
+    "id": "versicherung",
+    "de": "Versicherung",
+    "article": "die",
+    "pos": "noun",
+    "plural": "Versicherungen",
+    "pluralOnly": false,
+    "en": "insurance",
+    "topic": "patient",
+    "level": "A1",
+    "sentences": [
+      {
+        "level": "A1",
+        "de": "Haben Sie eine Versicherung?",
+        "en": "Do you have insurance?",
+        "blank": "Versicherung"
+      }
+    ],
+    "tip": null,
+    "verification": {
+      "status": "verified",
+      "sources": [
+        "Goethe-Institut A1/A2 Wortliste",
+        "Duden"
+      ]
+    }
+  },
+  {
+    "id": "arzt",
+    "de": "Arzt",
+    "article": "der",
+    "pos": "noun",
+    "plural": "Ärzte",
+    "pluralOnly": false,
+    "en": "doctor",
+    "topic": "patient",
+    "level": "A1",
+    "sentences": [
+      {
+        "level": "A1",
+        "de": "Der Arzt kommt gleich.",
+        "en": "The doctor is coming soon.",
+        "blank": "Arzt"
+      }
+    ],
+    "tip": null,
+    "verification": {
+      "status": "verified",
+      "sources": [
+        "Goethe-Institut A1/A2 Wortliste",
+        "Duden"
+      ]
+    }
+  },
+  {
+    "id": "krankenschwester",
+    "de": "Krankenschwester",
+    "article": "die",
+    "pos": "noun",
+    "plural": "Krankenschwestern",
+    "pluralOnly": false,
+    "en": "nurse (female)",
+    "topic": "patient",
+    "level": "A1",
+    "sentences": [
+      {
+        "level": "A1",
+        "de": "Die Krankenschwester hilft mir.",
+        "en": "The nurse helps me.",
+        "blank": "Krankenschwester"
+      }
+    ],
+    "tip": null,
+    "verification": {
+      "status": "verified",
+      "sources": [
+        "Goethe-Institut A1/A2 Wortliste",
+        "Duden"
+      ]
+    }
+  },
+  {
+    "id": "tablette",
+    "de": "Tablette",
+    "article": "die",
+    "pos": "noun",
+    "plural": "Tabletten",
+    "pluralOnly": false,
+    "en": "tablet / pill",
+    "topic": "care",
+    "level": "A1",
+    "sentences": [
+      {
+        "level": "A1",
+        "de": "Nehmen Sie die Tablette.",
+        "en": "Take the tablet.",
+        "blank": "Tablette"
+      }
+    ],
+    "tip": null,
+    "verification": {
+      "status": "verified",
+      "sources": [
+        "Goethe-Institut A1/A2 Wortliste",
+        "Duden"
+      ]
+    }
+  },
+  {
+    "id": "spritze",
+    "de": "Spritze",
+    "article": "die",
+    "pos": "noun",
+    "plural": "Spritzen",
+    "pluralOnly": false,
+    "en": "injection / syringe",
+    "topic": "care",
+    "level": "A1",
+    "sentences": [
+      {
+        "level": "A1",
+        "de": "Ich gebe Ihnen eine Spritze.",
+        "en": "I will give you an injection.",
+        "blank": "Spritze"
+      }
+    ],
+    "tip": null,
+    "verification": {
+      "status": "verified",
+      "sources": [
+        "Goethe-Institut A1/A2 Wortliste",
+        "Duden"
+      ]
+    }
+  },
+  {
+    "id": "wunde",
+    "de": "Wunde",
+    "article": "die",
+    "pos": "noun",
+    "plural": "Wunden",
+    "pluralOnly": false,
+    "en": "wound",
+    "topic": "symptoms",
+    "level": "A1",
+    "sentences": [
+      {
+        "level": "A1",
+        "de": "Die Wunde blutet.",
+        "en": "The wound is bleeding.",
+        "blank": "Wunde"
+      }
+    ],
+    "tip": null,
+    "verification": {
+      "status": "verified",
+      "sources": [
+        "Goethe-Institut A1/A2 Wortliste",
+        "Duden"
+      ]
+    }
+  },
+  {
+    "id": "blutdruck",
+    "de": "Blutdruck",
+    "article": "der",
+    "pos": "noun",
+    "plural": null,
+    "pluralOnly": false,
+    "en": "blood pressure",
+    "topic": "symptoms",
+    "level": "A1",
+    "sentences": [
+      {
+        "level": "A1",
+        "de": "Der Blutdruck ist hoch.",
+        "en": "The blood pressure is high.",
+        "blank": "Blutdruck"
+      }
+    ],
+    "tip": null,
+    "verification": {
+      "status": "verified",
+      "sources": [
+        "Goethe-Institut A1/A2 Wortliste",
+        "Duden"
+      ]
+    }
+  },
+  {
+    "id": "puls",
+    "de": "Puls",
+    "article": "der",
+    "pos": "noun",
+    "plural": "Pulse",
+    "pluralOnly": false,
+    "en": "pulse",
+    "topic": "symptoms",
+    "level": "A1",
+    "sentences": [
+      {
+        "level": "A1",
+        "de": "Der Puls ist normal.",
+        "en": "The pulse is normal.",
+        "blank": "Puls"
+      }
+    ],
+    "tip": null,
+    "verification": {
+      "status": "verified",
+      "sources": [
+        "Goethe-Institut A1/A2 Wortliste",
+        "Duden"
+      ]
+    }
+  },
+  {
+    "id": "temperatur",
+    "de": "Temperatur",
+    "article": "die",
+    "pos": "noun",
+    "plural": "Temperaturen",
+    "pluralOnly": false,
+    "en": "temperature",
+    "topic": "symptoms",
+    "level": "A1",
+    "sentences": [
+      {
+        "level": "A1",
+        "de": "Die Temperatur ist 38 Grad.",
+        "en": "The temperature is 38 degrees.",
+        "blank": "Temperatur"
+      }
+    ],
+    "tip": null,
+    "verification": {
+      "status": "verified",
+      "sources": [
+        "Goethe-Institut A1/A2 Wortliste",
+        "Duden"
+      ]
+    }
+  },
+  {
+    "id": "atmen",
+    "de": "atmen",
+    "article": null,
+    "pos": "verb",
+    "plural": null,
+    "pluralOnly": false,
+    "en": "to breathe",
+    "topic": "care",
+    "level": "A1",
+    "sentences": [
+      {
+        "level": "A1",
+        "de": "Bitte atmen Sie tief.",
+        "en": "Please breathe deeply.",
+        "blank": "atmen"
+      }
+    ],
+    "tip": null,
+    "verification": {
+      "status": "verified",
+      "sources": [
+        "Goethe-Institut A1/A2 Wortliste",
+        "Duden"
+      ]
+    }
+  },
+  {
+    "id": "aufstehen",
+    "de": "aufstehen",
+    "article": null,
+    "pos": "verb",
+    "plural": null,
+    "pluralOnly": false,
+    "en": "to get up / to stand up",
+    "topic": "care",
+    "level": "A1",
+    "sentences": [
+      {
+        "level": "A1",
+        "de": "Können Sie aufstehen?",
+        "en": "Can you stand up?",
+        "blank": "aufstehen"
+      }
+    ],
+    "tip": null,
+    "verification": {
+      "status": "verified",
+      "sources": [
+        "Goethe-Institut A1/A2 Wortliste",
+        "Duden"
+      ]
+    }
+  },
+  {
+    "id": "liegen",
+    "de": "liegen",
+    "article": null,
+    "pos": "verb",
+    "plural": null,
+    "pluralOnly": false,
+    "en": "to lie (down)",
+    "topic": "care",
+    "level": "A1",
+    "sentences": [
+      {
+        "level": "A1",
+        "de": "Bitte liegen Sie still.",
+        "en": "Please lie still.",
+        "blank": "liegen"
+      }
+    ],
+    "tip": null,
+    "verification": {
+      "status": "verified",
+      "sources": [
+        "Goethe-Institut A1/A2 Wortliste",
+        "Duden"
+      ]
+    }
+  },
+  {
+    "id": "kopfschmerzen",
+    "de": "Kopfschmerzen",
+    "article": "die",
+    "pos": "noun",
+    "plural": null,
+    "pluralOnly": true,
+    "en": "headache",
+    "topic": "symptoms",
+    "level": "A2",
+    "sentences": [
+      {
+        "level": "A2",
+        "de": "Der Patient hat starke Kopfschmerzen.",
+        "en": "The patient has a severe headache.",
+        "blank": "Kopfschmerzen"
+      }
+    ],
+    "tip": null,
+    "verification": {
+      "status": "verified",
+      "sources": [
+        "Goethe-Institut A1/A2 Wortliste",
+        "Duden"
+      ]
+    }
+  },
+  {
+    "id": "rueckenschmerzen",
+    "de": "Rückenschmerzen",
+    "article": "die",
+    "pos": "noun",
+    "plural": null,
+    "pluralOnly": true,
+    "en": "back pain",
+    "topic": "symptoms",
+    "level": "A2",
+    "sentences": [
+      {
+        "level": "A2",
+        "de": "Die Patientin klagt über Rückenschmerzen.",
+        "en": "The patient complains of back pain.",
+        "blank": "Rückenschmerzen"
+      }
+    ],
+    "tip": null,
+    "verification": {
+      "status": "verified",
+      "sources": [
+        "Goethe-Institut A1/A2 Wortliste",
+        "Duden"
+      ]
+    }
+  },
+  {
+    "id": "blutung",
+    "de": "Blutung",
+    "article": "die",
+    "pos": "noun",
+    "plural": "Blutungen",
+    "pluralOnly": false,
+    "en": "bleeding / haemorrhage",
+    "topic": "symptoms",
+    "level": "A2",
+    "sentences": [
+      {
+        "level": "A2",
+        "de": "Die Blutung muss gestoppt werden.",
+        "en": "The bleeding must be stopped.",
+        "blank": "Blutung"
+      }
+    ],
+    "tip": null,
+    "verification": {
+      "status": "verified",
+      "sources": [
+        "Goethe-Institut A1/A2 Wortliste",
+        "Duden"
+      ]
+    }
+  },
+  {
+    "id": "diagnose",
+    "de": "Diagnose",
+    "article": "die",
+    "pos": "noun",
+    "plural": "Diagnosen",
+    "pluralOnly": false,
+    "en": "diagnosis",
+    "topic": "patient",
+    "level": "A2",
+    "sentences": [
+      {
+        "level": "A2",
+        "de": "Die Diagnose ist noch nicht klar.",
+        "en": "The diagnosis is not yet clear.",
+        "blank": "Diagnose"
+      }
+    ],
+    "tip": null,
+    "verification": {
+      "status": "verified",
+      "sources": [
+        "Goethe-Institut A1/A2 Wortliste",
+        "Duden"
+      ]
+    }
+  },
+  {
+    "id": "medikament",
+    "de": "Medikament",
+    "article": "das",
+    "pos": "noun",
+    "plural": "Medikamente",
+    "pluralOnly": false,
+    "en": "medication",
+    "topic": "care",
+    "level": "A2",
+    "sentences": [
+      {
+        "level": "A2",
+        "de": "Das Medikament muss regelmäßig genommen werden.",
+        "en": "The medication must be taken regularly.",
+        "blank": "Medikament"
+      }
+    ],
+    "tip": null,
+    "verification": {
+      "status": "verified",
+      "sources": [
+        "Goethe-Institut A1/A2 Wortliste",
+        "Duden"
+      ]
+    }
+  },
+  {
+    "id": "operation",
+    "de": "Operation",
+    "article": "die",
+    "pos": "noun",
+    "plural": "Operationen",
+    "pluralOnly": false,
+    "en": "operation / surgery",
+    "topic": "ward",
+    "level": "A2",
+    "sentences": [
+      {
+        "level": "A2",
+        "de": "Die Operation war erfolgreich.",
+        "en": "The operation was successful.",
+        "blank": "Operation"
+      }
+    ],
+    "tip": null,
+    "verification": {
+      "status": "verified",
+      "sources": [
+        "Goethe-Institut A1/A2 Wortliste",
+        "Duden"
+      ]
+    }
+  },
+  {
+    "id": "untersuchung",
+    "de": "Untersuchung",
+    "article": "die",
+    "pos": "noun",
+    "plural": "Untersuchungen",
+    "pluralOnly": false,
+    "en": "examination",
+    "topic": "patient",
+    "level": "A2",
+    "sentences": [
+      {
+        "level": "A2",
+        "de": "Die Untersuchung beginnt jetzt.",
+        "en": "The examination starts now.",
+        "blank": "Untersuchung"
+      }
+    ],
+    "tip": null,
+    "verification": {
+      "status": "verified",
+      "sources": [
+        "Goethe-Institut A1/A2 Wortliste",
+        "Duden"
+      ]
+    }
+  },
+  {
+    "id": "pflegeperson",
+    "de": "Pflegeperson",
+    "article": "die",
+    "pos": "noun",
+    "plural": "Pflegepersonen",
+    "pluralOnly": false,
+    "en": "carer / nursing staff member",
+    "topic": "patient",
+    "level": "A2",
+    "sentences": [
+      {
+        "level": "A2",
+        "de": "Die Pflegeperson übernimmt die Aufgabe.",
+        "en": "The carer takes over the task.",
+        "blank": "Pflegeperson"
+      }
+    ],
+    "tip": null,
+    "verification": {
+      "status": "verified",
+      "sources": [
+        "Goethe-Institut A1/A2 Wortliste",
+        "Duden"
+      ]
+    }
+  },
+  {
+    "id": "notfall",
+    "de": "Notfall",
+    "article": "der",
+    "pos": "noun",
+    "plural": "Notfälle",
+    "pluralOnly": false,
+    "en": "emergency",
+    "topic": "ward",
+    "level": "A2",
+    "sentences": [
+      {
+        "level": "A2",
+        "de": "Das ist ein medizinischer Notfall.",
+        "en": "This is a medical emergency.",
+        "blank": "Notfall"
+      }
+    ],
+    "tip": null,
+    "verification": {
+      "status": "verified",
+      "sources": [
+        "Goethe-Institut A1/A2 Wortliste",
+        "Duden"
+      ]
+    }
+  },
+  {
+    "id": "rehabilitation",
+    "de": "Rehabilitation",
+    "article": "die",
+    "pos": "noun",
+    "plural": "Rehabilitationen",
+    "pluralOnly": false,
+    "en": "rehabilitation",
+    "topic": "care",
+    "level": "A2",
+    "sentences": [
+      {
+        "level": "A2",
+        "de": "Die Rehabilitation dauert mehrere Wochen.",
+        "en": "Rehabilitation takes several weeks.",
+        "blank": "Rehabilitation"
+      }
+    ],
+    "tip": null,
+    "verification": {
+      "status": "verified",
+      "sources": [
+        "Goethe-Institut A1/A2 Wortliste",
+        "Duden"
+      ]
+    }
+  },
+  {
+    "id": "allergiereakt",
+    "de": "Allergiereaktion",
+    "article": "die",
+    "pos": "noun",
+    "plural": "Allergieraktionen",
+    "pluralOnly": false,
+    "en": "allergic reaction",
+    "topic": "symptoms",
+    "level": "A2",
+    "sentences": [
+      {
+        "level": "A2",
+        "de": "Der Patient hat eine Allergiereaktion.",
+        "en": "The patient is having an allergic reaction.",
+        "blank": "Allergiereaktion"
+      }
+    ],
+    "tip": null,
+    "verification": {
+      "status": "verified",
+      "sources": [
+        "Goethe-Institut A1/A2 Wortliste",
+        "Duden"
+      ]
+    }
+  },
+  {
+    "id": "krankenhaus",
+    "de": "Krankenhaus",
+    "article": "das",
+    "pos": "noun",
+    "plural": "Krankenhäuser",
+    "pluralOnly": false,
+    "en": "hospital",
+    "topic": "ward",
+    "level": "A1",
+    "sentences": [
+      {
+        "level": "A1",
+        "de": "Das Krankenhaus ist groß.",
+        "en": "The hospital is large.",
+        "blank": "Krankenhaus"
+      }
+    ],
+    "tip": null,
+    "verification": {
+      "status": "verified",
+      "sources": [
+        "Goethe-Institut A1/A2 Wortliste",
+        "Duden"
+      ]
+    }
+  },
+  {
+    "id": "nase",
+    "de": "Nase",
+    "article": "die",
+    "pos": "noun",
+    "plural": "Nasen",
+    "pluralOnly": false,
+    "en": "nose",
+    "topic": "body",
+    "level": "A1",
+    "sentences": [
+      {
+        "level": "A1",
+        "de": "Meine Nase blutet.",
+        "en": "My nose is bleeding.",
+        "blank": "Nase"
+      }
+    ],
+    "tip": null,
+    "verification": {
+      "status": "verified",
+      "sources": [
+        "Goethe-Institut A1/A2 Wortliste",
+        "Duden"
+      ]
+    }
+  },
+  {
+    "id": "ruecken",
+    "de": "Rücken",
+    "article": "der",
+    "pos": "noun",
+    "plural": "Rücken",
+    "pluralOnly": false,
+    "en": "back",
+    "topic": "body",
+    "level": "A1",
+    "sentences": [
+      {
+        "level": "A1",
+        "de": "Mein Rücken tut weh.",
+        "en": "My back hurts.",
+        "blank": "Rücken"
+      }
+    ],
+    "tip": null,
+    "verification": {
+      "status": "verified",
+      "sources": [
+        "Goethe-Institut A1/A2 Wortliste",
+        "Duden"
+      ]
+    }
+  },
+  {
+    "id": "hals",
+    "de": "Hals",
+    "article": "der",
+    "pos": "noun",
+    "plural": "Hälse",
+    "pluralOnly": false,
+    "en": "throat / neck",
+    "topic": "body",
+    "level": "A1",
+    "sentences": [
+      {
+        "level": "A1",
+        "de": "Mein Hals tut weh.",
+        "en": "My throat hurts.",
+        "blank": "Hals"
+      }
+    ],
+    "tip": null,
+    "verification": {
+      "status": "verified",
+      "sources": [
+        "Goethe-Institut A1/A2 Wortliste",
+        "Duden"
+      ]
+    }
+  },
+  {
+    "id": "notaufnahme",
+    "de": "Notaufnahme",
+    "article": "die",
+    "pos": "noun",
+    "plural": "Notaufnahmen",
+    "pluralOnly": false,
+    "en": "emergency room / A&E",
+    "topic": "ward",
+    "level": "A2",
+    "sentences": [
+      {
+        "level": "A2",
+        "de": "Der Patient kommt in die Notaufnahme.",
+        "en": "The patient is brought to the emergency room.",
+        "blank": "Notaufnahme"
+      }
+    ],
+    "tip": null,
+    "verification": {
+      "status": "verified",
+      "sources": [
+        "Goethe-Institut A1/A2 Wortliste",
+        "Duden"
+      ]
+    }
+  },
+  {
+    "id": "krankenakte",
+    "de": "Krankenakte",
+    "article": "die",
+    "pos": "noun",
+    "plural": "Krankenakten",
+    "pluralOnly": false,
+    "en": "medical record / patient file",
+    "topic": "patient",
+    "level": "A2",
+    "sentences": [
+      {
+        "level": "A2",
+        "de": "Die Krankenakte enthält alle Informationen.",
+        "en": "The medical record contains all information.",
+        "blank": "Krankenakte"
+      }
+    ],
+    "tip": null,
+    "verification": {
+      "status": "verified",
+      "sources": [
+        "Goethe-Institut A1/A2 Wortliste",
+        "Duden"
+      ]
+    }
+  },
+  {
+    "id": "lunge",
+    "de": "Lunge",
+    "article": "die",
+    "pos": "noun",
+    "plural": "Lungen",
+    "pluralOnly": false,
+    "en": "lung",
+    "topic": "body",
+    "level": "A2",
+    "sentences": [
+      {
+        "level": "A2",
+        "de": "Der Arzt hört die Lunge ab.",
+        "en": "The doctor listens to the lungs.",
+        "blank": "Lunge"
+      }
+    ],
+    "tip": null,
+    "verification": {
+      "status": "verified",
+      "sources": [
+        "Goethe-Institut A1/A2 Wortliste",
+        "Duden"
+      ]
+    }
+  },
+  {
+    "id": "herz",
+    "de": "Herz",
+    "article": "das",
+    "pos": "noun",
+    "plural": "Herzen",
+    "pluralOnly": false,
+    "en": "heart",
+    "topic": "body",
+    "level": "A2",
+    "sentences": [
+      {
+        "level": "A2",
+        "de": "Das Herz schlägt regelmäßig.",
+        "en": "The heart beats regularly.",
+        "blank": "Herz"
+      }
+    ],
+    "tip": null,
+    "verification": {
+      "status": "verified",
+      "sources": [
+        "Goethe-Institut A1/A2 Wortliste",
+        "Duden"
+      ]
+    }
+  },
+  {
+    "id": "magen",
+    "de": "Magen",
+    "article": "der",
+    "pos": "noun",
+    "plural": "Mägen",
+    "pluralOnly": false,
+    "en": "stomach",
+    "topic": "body",
+    "level": "A2",
+    "sentences": [
+      {
+        "level": "A2",
+        "de": "Der Magen schmerzt nach dem Essen.",
+        "en": "The stomach hurts after eating.",
+        "blank": "Magen"
+      }
+    ],
+    "tip": null,
+    "verification": {
+      "status": "verified",
+      "sources": [
+        "Goethe-Institut A1/A2 Wortliste",
+        "Duden"
+      ]
+    }
+  },
+  {
+    "id": "wirbelsaeule",
+    "de": "Wirbelsäule",
+    "article": "die",
+    "pos": "noun",
+    "plural": "Wirbelsäulen",
+    "pluralOnly": false,
+    "en": "spine",
+    "topic": "body",
+    "level": "A2",
+    "sentences": [
+      {
+        "level": "A2",
+        "de": "Die Wirbelsäule stützt den Rücken.",
+        "en": "The spine supports the back.",
+        "blank": "Wirbelsäule"
+      }
+    ],
+    "tip": null,
+    "verification": {
+      "status": "verified",
+      "sources": [
+        "Goethe-Institut A1/A2 Wortliste",
+        "Duden"
+      ]
+    }
+  },
+  {
+    "id": "verbandwechsel",
+    "de": "Verbandwechsel",
+    "article": "der",
+    "pos": "noun",
+    "plural": "Verbandwechsel",
+    "pluralOnly": false,
+    "en": "dressing change",
+    "topic": "care",
+    "level": "A2",
+    "sentences": [
+      {
+        "level": "A2",
+        "de": "Der Verbandwechsel findet am Nachmittag statt.",
+        "en": "The dressing change takes place in the afternoon.",
+        "blank": "Verbandwechsel"
+      }
+    ],
+    "tip": null,
+    "verification": {
+      "status": "verified",
+      "sources": [
+        "Goethe-Institut A1/A2 Wortliste",
+        "Duden"
+      ]
+    }
+  },
+  {
+    "id": "visite",
+    "de": "Visite",
+    "article": "die",
+    "pos": "noun",
+    "plural": "Visiten",
+    "pluralOnly": false,
+    "en": "ward round",
+    "topic": "ward",
+    "level": "A2",
+    "sentences": [
+      {
+        "level": "A2",
+        "de": "Die Visite beginnt jeden Morgen um acht Uhr.",
+        "en": "The ward round starts every morning at eight o'clock.",
+        "blank": "Visite"
+      }
+    ],
+    "tip": null,
+    "verification": {
+      "status": "verified",
+      "sources": [
+        "Goethe-Institut A1/A2 Wortliste",
+        "Duden"
+      ]
+    }
+  },
+  {
+    "id": "katheter",
+    "de": "Katheter",
+    "article": "der",
+    "pos": "noun",
+    "plural": "Katheter",
+    "pluralOnly": false,
+    "en": "catheter",
+    "topic": "care",
+    "level": "A2",
+    "sentences": [
+      {
+        "level": "A2",
+        "de": "Der Katheter wird vorsichtig gewechselt.",
+        "en": "The catheter is carefully changed.",
+        "blank": "Katheter"
+      }
+    ],
+    "tip": null,
+    "verification": {
+      "status": "verified",
+      "sources": [
+        "Goethe-Institut A2 Wortliste",
+        "Duden"
+      ]
+    }
+  }
+]

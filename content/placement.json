@@ -1,0 +1,159 @@
+[
+  {
+    "id": "p-a1-1",
+    "level": "A1",
+    "kind": "meaning",
+    "prompt": "What does 'Kopf' mean?",
+    "options": [
+      "head",
+      "hand",
+      "leg",
+      "arm"
+    ],
+    "answerIndex": 0,
+    "verification": {
+      "status": "verified",
+      "sources": [
+        "Goethe-Institut A1/A2 Wortliste",
+        "Duden"
+      ]
+    }
+  },
+  {
+    "id": "p-a1-2",
+    "level": "A1",
+    "kind": "article",
+    "prompt": "What is the article for 'Fieber' (fever)?",
+    "options": [
+      "der",
+      "die",
+      "das"
+    ],
+    "answerIndex": 2,
+    "verification": {
+      "status": "verified",
+      "sources": [
+        "Goethe-Institut A1/A2 Wortliste",
+        "Duden"
+      ]
+    }
+  },
+  {
+    "id": "p-a1-3",
+    "level": "A1",
+    "kind": "meaning",
+    "prompt": "What does 'Schmerz' mean?",
+    "options": [
+      "cough",
+      "pain",
+      "fever",
+      "dizziness"
+    ],
+    "answerIndex": 1,
+    "verification": {
+      "status": "verified",
+      "sources": [
+        "Goethe-Institut A1/A2 Wortliste",
+        "Duden"
+      ]
+    }
+  },
+  {
+    "id": "p-a1-4",
+    "level": "A1",
+    "kind": "article",
+    "prompt": "What is the article for 'Hand' (hand)?",
+    "options": [
+      "der",
+      "die",
+      "das"
+    ],
+    "answerIndex": 1,
+    "verification": {
+      "status": "verified",
+      "sources": [
+        "Goethe-Institut A1/A2 Wortliste",
+        "Duden"
+      ]
+    }
+  },
+  {
+    "id": "p-a1-5",
+    "level": "A1",
+    "kind": "sentence",
+    "prompt": "Choose the correct translation: 'Ich messe den Blutdruck.'",
+    "options": [
+      "I take the temperature.",
+      "I take the blood pressure.",
+      "I give the patient a tablet.",
+      "I wash my hands."
+    ],
+    "answerIndex": 1,
+    "verification": {
+      "status": "verified",
+      "sources": [
+        "Goethe-Institut A1/A2 Wortliste",
+        "Duden"
+      ]
+    }
+  },
+  {
+    "id": "p-a2-1",
+    "level": "A2",
+    "kind": "meaning",
+    "prompt": "What does 'Kopfschmerzen' mean?",
+    "options": [
+      "back pain",
+      "headache",
+      "nausea",
+      "dizziness"
+    ],
+    "answerIndex": 1,
+    "verification": {
+      "status": "verified",
+      "sources": [
+        "Goethe-Institut A1/A2 Wortliste",
+        "Duden"
+      ]
+    }
+  },
+  {
+    "id": "p-a2-2",
+    "level": "A2",
+    "kind": "article",
+    "prompt": "What is the article for 'Diagnose' (diagnosis)?",
+    "options": [
+      "der",
+      "die",
+      "das"
+    ],
+    "answerIndex": 1,
+    "verification": {
+      "status": "verified",
+      "sources": [
+        "Goethe-Institut A1/A2 Wortliste",
+        "Duden"
+      ]
+    }
+  },
+  {
+    "id": "p-a2-3",
+    "level": "A2",
+    "kind": "sentence",
+    "prompt": "What does 'Die Blutung muss gestoppt werden.' mean?",
+    "options": [
+      "The bleeding must be stopped.",
+      "The medication must be taken.",
+      "The diagnosis is clear.",
+      "The operation was successful."
+    ],
+    "answerIndex": 0,
+    "verification": {
+      "status": "verified",
+      "sources": [
+        "Goethe-Institut A1/A2 Wortliste",
+        "Duden"
+      ]
+    }
+  }
+]
