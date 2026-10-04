@@ -1,5 +1,5 @@
 // ============================================================
-// HomeScreen.tsx
+// HomeScreen.tsx — Home dashboard with full-bleed lemon top band
 // ============================================================
 import { useMemo } from 'react';
 import { useNavigate } from 'react-router-dom';
@@ -21,9 +21,12 @@ export default function HomeScreen() {
   const level = useAppStore((s) => s.level);
   const progress = useAppStore((s) => s.progress);
   const attempts = useAppStore((s) => s.attempts);
+  const isDemoData = useAppStore((s) => s.isDemoData);
+  const resetAll = useAppStore((s) => s.resetAll);
 
   const atMs = now();
 
+  // Date key for today: YYYY-MM-DD
   const todayKey = useMemo(() => {
     const d = new Date(atMs);
     return `${d.getFullYear()}-${String(d.getMonth() + 1).padStart(2, '0')}-${String(d.getDate()).padStart(2, '0')}`;
@@ -61,42 +64,129 @@ export default function HomeScreen() {
   const isCaughtUp = canPractise && dueWords.length === 0;
 
   return (
-    <div className="screen screen--white">
-      {/* Header */}
-      <div className="topbar">
-        <div>
-          <span className="text-small" style={{ color: 'var(--grey)' }}>
-            Your level: {level ?? '—'}&nbsp;
-          </span>
+    <div className="screen screen--white" style={{ padding: 0 }}>
+      {/* Full-bleed lemon band at top */}
+      <div
+        style={{
+          background: 'var(--lemon)',
+          padding: '16px var(--side-pad) 24px',
+          width: '100%',
+          boxSizing: 'border-box',
+        }}
+      >
+        <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: 16 }}>
+          <div>
+            <span className="text-small" style={{ color: 'var(--black)', opacity: 0.8 }}>
+              Your level: {level ?? '—'}&nbsp;
+            </span>
+            <button
+              className="text-small"
+              style={{
+                background: 'none',
+                border: 'none',
+                cursor: 'pointer',
+                color: 'var(--black)',
+                fontWeight: 700,
+                textDecoration: 'underline',
+                padding: 0,
+              }}
+              onClick={() => navigate('/choose-level')}
+              id="change-level-home"
+            >
+              (change)
+            </button>
+          </div>
           <button
-            className="text-small"
-            style={{ background: 'none', border: 'none', cursor: 'pointer', color: 'var(--black)', fontWeight: 600 }}
-            onClick={() => navigate('/choose-level')}
-            id="change-level-home"
+            className="icon-btn"
+            onClick={() => navigate('/settings')}
+            aria-label="Settings"
+            id="settings-btn"
+            style={{ color: 'var(--black)', borderColor: 'var(--black)' }}
           >
-            (change)
+            <Settings size={20} />
           </button>
         </div>
-        <button className="icon-btn" onClick={() => navigate('/settings')} aria-label="Settings" id="settings-btn">
-          <Settings size={24} strokeWidth={2} />
-        </button>
+
+        {/* Sample data banner */}
+        {isDemoData && (
+          <div
+            style={{
+              background: 'var(--black)',
+              color: 'var(--white)',
+              padding: '8px 14px',
+              borderRadius: 8,
+              display: 'flex',
+              alignItems: 'center',
+              justifyContent: 'space-between',
+              fontSize: 13,
+              marginBottom: 16,
+            }}
+          >
+            <span>Sample progress loaded</span>
+            <button
+              onClick={() => {
+                resetAll();
+                navigate('/');
+              }}
+              style={{
+                background: 'none',
+                border: 'none',
+                color: 'var(--lemon)',
+                cursor: 'pointer',
+                fontSize: 13,
+                fontWeight: 600,
+                textDecoration: 'underline',
+                padding: 0,
+              }}
+            >
+              Reset
+            </button>
+          </div>
+        )}
+
+        <h1 id="today-heading" className="text-small" style={{ color: 'var(--black)', opacity: 0.75, marginBottom: 4 }}>
+          Today
+        </h1>
+        <div
+          style={{
+            fontFamily: 'var(--font-serif)',
+            fontSize: 40,
+            lineHeight: '44px',
+            fontWeight: 700,
+            marginBottom: 12,
+            letterSpacing: '-0.02em',
+          }}
+        >
+          {todayAnswers} of {DAILY_GOAL}
+        </div>
+        <ProgressBar value={todayAnswers / DAILY_GOAL} label={`${todayAnswers} of ${DAILY_GOAL} answers today`} />
+
+        {isCaughtUp && (
+          <p className="text-small" style={{ color: 'var(--black)', opacity: 0.8, marginTop: 12 }}>
+            You're caught up. Practise anyway to keep words fresh.
+          </p>
+        )}
       </div>
 
-      <div className="content">
-        {/* Daily goal */}
-        <section aria-labelledby="today-heading" style={{ marginBottom: 28 }}>
-          <h2 id="today-heading" className="text-title" style={{ marginBottom: 4 }}>Today</h2>
-          <p className="text-body" style={{ color: 'var(--grey)', marginBottom: 12 }}>
-            {todayAnswers} of {DAILY_GOAL} answers
-          </p>
-          <ProgressBar value={todayAnswers / DAILY_GOAL} label={`${todayAnswers} of ${DAILY_GOAL} answers today`} />
-
-          {isCaughtUp && (
-            <p className="text-small" style={{ color: 'var(--grey)', marginTop: 12 }}>
-              You're caught up. Practise anyway to keep words fresh.
-            </p>
+      {/* Main body on white */}
+      <div className="content" style={{ padding: '24px var(--side-pad)', flex: 1 }}>
+        {/* Practice actions */}
+        <div style={{ display: 'flex', flexDirection: 'column', gap: 12, marginBottom: 28 }}>
+          {canPractise ? (
+            <PillButton variant="primary" id="practise-btn" onClick={() => navigate('/session')}>
+              {isCaughtUp ? 'Practise anyway' : 'Practise'}
+            </PillButton>
+          ) : (
+            <PillButton variant="primary" id="practise-btn" disabled>
+              Practise
+            </PillButton>
           )}
-        </section>
+          {hasUnseenWords && (
+            <PillButton variant="outline" id="learn-btn" onClick={() => navigate('/learn')}>
+              Learn new words
+            </PillButton>
+          )}
+        </div>
 
         {/* Weak words */}
         {weakWords.length > 0 && (
@@ -135,30 +225,13 @@ export default function HomeScreen() {
             gap: 4,
             width: 'fit-content',
             padding: 0,
+            marginTop: 'auto',
           }}
           id="progress-link"
           onClick={() => navigate('/progress')}
         >
           Progress <ChevronRight size={18} />
         </button>
-      </div>
-
-      {/* Actions */}
-      <div className="action-zone" style={{ position: 'static', background: 'transparent', marginTop: 'auto', paddingBottom: 24 }}>
-        {canPractise ? (
-          <PillButton variant="primary" id="practise-btn" onClick={() => navigate('/session')}>
-            {isCaughtUp ? 'Practise anyway' : 'Practise'}
-          </PillButton>
-        ) : (
-          <PillButton variant="primary" id="practise-btn" disabled>
-            Practise
-          </PillButton>
-        )}
-        {hasUnseenWords && (
-          <PillButton variant="outline" id="learn-btn" onClick={() => navigate('/learn')}>
-            Learn new words
-          </PillButton>
-        )}
       </div>
     </div>
   );

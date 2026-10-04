@@ -338,7 +338,7 @@ export default function SessionScreen() {
               <p className="text-body" style={{ color: 'var(--grey)', marginBottom: 8 }}>
                 What does this mean?
               </p>
-              <p className="text-title" lang="de" style={{ marginBottom: 32 }}>
+              <p className="text-prompt-de" lang="de" style={{ marginBottom: 32 }}>
                 {currentWord.article ? `${currentWord.article} ` : ''}{currentWord.de}
               </p>
               <div className="stack">
@@ -382,7 +382,7 @@ export default function SessionScreen() {
               <p className="text-body" style={{ color: 'var(--grey)', marginBottom: 8 }}>
                 Which is correct?
               </p>
-              <p className="text-title" style={{ marginBottom: 32 }}>{currentWord.en}</p>
+              <p className="text-prompt-en" style={{ marginBottom: 32 }}>{currentWord.en}</p>
               <div className="stack">
                 {mcqEnDeOptions.map((opt, i) => {
                   const isSelected = selected === i;
@@ -425,7 +425,7 @@ export default function SessionScreen() {
               <p className="text-body" style={{ color: 'var(--grey)', marginBottom: 8 }}>
                 What is the article?
               </p>
-              <p className="text-title" lang="de" style={{ marginBottom: 32 }}>{currentWord.de}</p>
+              <p className="text-prompt-de" lang="de" style={{ marginBottom: 32 }}>{currentWord.de}</p>
               <div style={{ display: 'flex', gap: 12 }}>
                 {(['der', 'die', 'das'] as Article[]).map((art) => {
                   const isSelected = chosenArticle === art;
@@ -507,7 +507,7 @@ export default function SessionScreen() {
               <p className="text-body" style={{ color: 'var(--grey)', marginBottom: 8 }}>
                 Type the German word
               </p>
-              <p className="text-title" style={{ marginBottom: 24 }}>{currentWord.en}</p>
+              <p className="text-prompt-en" style={{ marginBottom: 24 }}>{currentWord.en}</p>
 
               {currentWord.pos === 'noun' && currentWord.article && (
                 <div style={{ display: 'flex', gap: 12, marginBottom: 16 }}>

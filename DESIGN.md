@@ -20,17 +20,17 @@ Reference: a flashcard app concept with three phone screens. A full-bleed green 
 - No phonetic (IPA) line. Nurses will not read it. Use an audio button instead.
 - Do not copy the reference's layout pixel for pixel. Use the pattern, not the artwork.
 
-**Where the boldness goes:** the word card. Everything else stays quiet, white and disciplined so the card is the memorable moment.
+**Color principle (V2):** **Colour marks progress and state; white is for work screens.** (Welcome is full-bleed lemon; Learn uses lemon and mint; Home features a full-bleed lemon top band; Practice is white; Summary is full-bleed mint; Progress is black).
 
 ## 2. Color tokens
 
 | Token | Hex | Use |
 |---|---|---|
-| `--black` | `#000000` | Detail and progress screens, text, outlines, primary pills |
-| `--white` | `#FFFFFF` | Home, practice, settings screens |
-| `--lemon` | `#FFD21F` | Learn card, German side |
-| `--mint` | `#6EE57A` | Learn card, meaning side. "Correct" feedback sheet |
-| `--coral` | `#FF8A75` | "Not quite" feedback sheet |
+| `--black` | `#000000` | Detail, progress, desktop container, text, primary pills |
+| `--white` | `#FFFFFF` | Work screens: practice, settings, home body |
+| `--lemon` | `#FFD21F` | Welcome screen, learn card German side, Home top band |
+| `--mint` | `#6EE57A` | Summary screen, learn card meaning side, "Correct" feedback sheet |
+| `--coral` | `#FF8A75` | "Not quite" feedback sheet, retry chip |
 | `--grey` | `#5F5F5F` | Secondary text on white |
 | `--line` | `#D9D9D9` | Dividers, disabled outlines |
 
@@ -42,20 +42,20 @@ Article chips (small pills, white text, always show the article as text):
 | die | `#C62828` |
 | das | `#15803D` |
 
-These follow a common but not universal German-learning colour convention. Chips are small and always carry the word "der", "die" or "das", so colour is never the only signal. Correct and not-quite feedback always include an icon and text.
-
-Contrast: black on lemon, mint and coral, and white on the three chip colours, is intended to meet WCAG AA (4.5:1 for text). The figures were estimated by hand. Verify every pair with a contrast checker before shipping and adjust a hex if any fails.
-
-Do not add gradients, shadows or extra accent colours.
+These follow a common German-learning colour convention. Chips are small and always carry the word "der", "die" or "das", so colour is never the only signal. Correct and not-quite feedback always include an icon and text.
 
 ## 3. Typography
 
 | Role | Family | Weight | Size and line height |
 |---|---|---|---|
-| German headword | Fraunces (variable) | 700 | 56/60 (scale down to 44/48 for long words) |
+| Welcome headline | Fraunces (variable) | 700 | 44/48 |
+| German headword (Learn) | Fraunces (variable) | 700 | 56/60 (44/48 for long words) |
+| Practice German test word | Fraunces (variable) | 700 | 40/44 |
+| Practice English prompt | Figtree | 600 | 32/38 |
+| Large numerals (Summary, Progress, Home) | Fraunces (variable) | 700 | 64/68 (Summary), 48/52 (Progress), 40/44 (Home) |
 | Meaning, large statements | Figtree | 600 | 30/36 |
 | Screen titles | Figtree | 700 | 24/30 |
-| Body | Figtree | 400 | 17/26 |
+| Body & Question labels | Figtree | 400 | 17/26 |
 | Buttons | Figtree | 600 | 17/24 |
 | Small text | Figtree | 500 | 14/20 (the minimum) |
 
@@ -66,10 +66,11 @@ Do not add gradients, shadows or extra accent colours.
 
 ## 4. Layout
 
-- Design width 390 px. Content container max width 480 px, centred on larger screens with the page background matching the current screen colour.
+- Mobile design width 390 px. Content container max width 480 px.
+- Desktop presentation (1024 px and above): two columns on a black page (`#000000`). Left column displays the text wordmark "Station Deutsch" and a three-sentence explanation of the learning loop. Right column presents the app inside a 390 by 820 px frame (8 px black border, 36 px radius), scrolling within the frame with all sheets and overlays self-contained.
 - Side padding 24 px. Bottom action zone about 96 px plus the safe-area inset. Use `dvh` units, not `vh`.
-- One primary action per screen, anchored at the bottom. Content is left-aligned. The headword on the learn card is left-aligned and vertically centred, as in the reference.
-- Shape language: screens and cards are full-bleed rectangles with no rounding. Interactive controls are pills (fully rounded) or 44 px circles. This difference is intentional and tells the learner what can be tapped.
+- One primary action per screen, anchored at the bottom.
+- Shape language: screens and cards are full-bleed rectangles. Interactive controls are pills (fully rounded, 56 px high) or 44 px circles.
 
 ### Wireframes
 
@@ -85,7 +86,7 @@ Learn card, German side (lemon):
 |  (audio)                 |
 |                          |
 |                          |
-|  ( Flip )                |   <- outlined pill, full width
+|  ( Flip )                |   <- full width 56px pill
 +--------------------------+
 ```
 
@@ -122,21 +123,20 @@ Practice, multiple choice (white), then feedback sheet:
 +--------------------------+
 ```
 
-Home (white):
+Home (white with lemon top band):
 
 ```
-+--------------------------+
-|  Your level: A1  (change)|
-|                          |
++==========================+
+|  Your level: A1  (change)|  lemon band
 |  Today                   |
-|  4 of 10 answers         |
+|  4 of 10                 |  Fraunces 40
 |  =====-----              |
-|                          |
-|  ( Practise )            |   <- black filled pill
-|  ( Learn new words )     |   <- outlined pill
++==========================+
+|  ( Practise )            |  white body
+|  ( Learn new words )     |
 |                          |
 |  Weak words (3)          |
-|  Progress                |
+|  Progress >              |
 +--------------------------+
 ```
 
@@ -147,9 +147,9 @@ Progress (black):
 |  <back>   Progress       |
 |  Words by state          |
 |  12 New  6 Learning ...  |   <- large Fraunces numerals
-|  Weak words              |
+|  Needs attention         |
 |  [der] Kopf    missed 3x |
-|  ( Practise these )      |
+|  ( Practise these )      |   <- on-black pill with white outline
 |  Mistakes by type        |
 |  Article  ======         |   <- lemon bars
 |  Spelling ===            |
@@ -158,26 +158,29 @@ Progress (black):
 
 ## 5. Screens
 
-1. **Welcome.** One sentence on what the app does, then "Start check" and "Choose my level".
+1. **Welcome.** Full-bleed lemon. Fraunces 44/48 headline: "Medical German for nurses." Subtitle: "A1 and A2 words. A few minutes a day." 3-step loop summary. Actions: "Start check", "Choose my level", and "Try with sample progress".
 2. **Placement question.** One question per screen, progress bar, options as pills.
-3. **Placement result.** "Your starting point: A1" with the explanation and "Change level".
-4. **Home.** As wireframe. "You're caught up" state replaces the goal block when nothing is due, with "Practise anyway".
-5. **Learn.** Lemon and mint cards, then an optional detail view on black with tabs: "Meaning", "Example", "Tip".
-6. **Practice.** One exercise per screen, white. Feedback sheet slides up from the bottom after "Check".
-7. **Typed recall.** Article buttons (der, die, das), a text field, and a row of ä ö ü ß buttons above the keyboard.
-8. **Session summary.** Accuracy, words that moved up, new mistakes, and "Keep practising" as the primary pill.
-9. **Progress.** As wireframe.
-10. **Settings.** Level, About (states that progress is stored in this browser only), Demo tools: "Simulate tomorrow", "Load demo history" (labelled as sample data), "Reset all data".
+3. **Placement result.** "Your starting point: A1" with explanation and "Change level".
+4. **Home.** Full-bleed lemon band at top with "Today", count in large Fraunces numerals (e.g. "4 of 10"), and progress bar. Below on white: primary "Practise", Weak words, and Progress link.
+5. **Learn.** Lemon and mint cards, then detail view on black with tabs: "Meaning", "Example", "Tip".
+6. **Practice.** One exercise per screen, white. Tested German word in Fraunces 40/44, English prompt in Figtree 600 32/38. Fixed denominator counter (e.g. 4/10), "Retry" chip on retries. Error boundary with skip fallback.
+7. **Typed recall.** Article buttons (der, die, das), text field with umlaut shortcuts.
+8. **Session summary.** Full-bleed mint screen. Accuracy in large Fraunces numeral (64/68). "Keep practising" as primary pill.
+9. **Progress.** Black screen. Sentence case headings, "Needs attention" list (never shows "Mastered"), mistakes by type (plural hidden until plural exercises exist), "Practise these" in `.pill--on-black`.
+10. **Settings.** Level, About (browser storage notice), Demo tools: "Simulate tomorrow", "Load demo history" (labelled as sample data), "Reset all data".
 
 ## 6. Components
 
-- `PillButton`: variants primary (black fill, white text), outline (black 2 px border), on-colour (black outline on lemon, mint or coral). Height 56 px.
-- `IconButton`: 44 px circle, 2 px outline, Lucide icon at 24 px with 2 px stroke.
+- `PillButton`: variants `primary` (black fill, white text), `outline` (black 2 px border), `on-color` (black outline on lemon, mint or coral), and `on-black` (white 2px border, white text, hover white fill on black). Height 56 px, full width, padding 0 24px.
+- `IconButton`: 44 px circle, 2 px outline, Lucide icon at 20-24 px with 2 px stroke.
 - `ArticleChip`: small pill, 28 px high, white text 14 px.
-- `OptionButton`: full-width pill 56 px, outline. States: default, selected, correct, wrong (wrong and correct add an icon and a text label, not colour alone).
-- `FeedbackSheet`: bottom sheet, full width, mint or coral, with icon, "Correct" or "Not quite", the explanation, and "Continue".
-- `ProgressBar`: 8 px high, black on line grey.
-- `StateBadge`: text only. New, Learning, Familiar, Strong, Mastered.
+- `OptionButton`: full-width pill 56 px, outline. States: default, selected, correct (mint + tick icon), wrong (coral + cross icon). Never relies on colour alone.
+- `FeedbackSheet`: bottom sheet, full width on mobile, aligned to container max-width on desktop, mint or coral, with icon, "Correct" or "Not quite", explanation, and "Continue".
+- `ProgressBar`: 8 px high, black on line grey (lemon on dark grey for black screen).
+- `StateBadge`: text only. New, Learning, Familiar, Strong, Mastered (never shown under weak words).
+- `UmlautRow`: four 44 px buttons that insert ä, ö, ü or ß at the cursor.
+- `Tabs`: pill tabs with outline, as in the reference detail screen.
+- `TopBar`: back or close icon, fixed progress counter e.g. 4/10, no title unless needed.
 - `UmlautRow`: four 44 px buttons that insert ä, ö, ü or ß at the cursor.
 - `Tabs`: pill tabs with outline, as in the reference detail screen.
 - `TopBar`: back or close icon, optional progress, no title unless needed.
