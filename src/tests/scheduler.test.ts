@@ -96,10 +96,10 @@ describe('applyResult — demotion', () => {
     expect(next.box).toBe(1);
   });
 
-  it('article error does NOT change box', () => {
+  it('article error demotes box by 1 (minimum box 1)', () => {
     const p = { ...freshProgress('kopf'), box: 3 as const, seen: 5 };
     const next = applyResult(p, false, 'article', false);
-    expect(next.box).toBe(3);
+    expect(next.box).toBe(2);
   });
 
   it('spelling error does NOT change box', () => {

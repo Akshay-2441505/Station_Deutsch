@@ -1,64 +1,107 @@
 // ============================================================
-// demo.ts — deterministic demo history generator
+// demo.ts — deterministic demo history generator (V2)
+// Per V2_CHANGES.md §1.5:
+// - spread attempts over ~5 days
+// - mix error types (6 article, 4 meaning, 3 spelling)
+// - no word with ≥ 2 recent misses in box 4 or 5
+// - box counts match attempt history
 // ============================================================
 
-import type { AppState, Attempt, WordProgress } from './types';
-import { freshProgress } from './scheduler';
+import type { AppState, Attempt, WordProgress, ExerciseType, ErrorType } from './types';
+import { applyResult, freshProgress } from './scheduler';
 
-const DEMO_WORD_IDS = [
-  'kopf', 'arm', 'bein', 'hand', 'auge', 'ohr', 'mund', 'nase',
-  'fieber', 'schmerz', 'husten', 'allergie',
-  'blutdruck', 'puls', 'temperatur',
-];
+interface DemoAction {
+  day: number; // 0 to 4 (spread over 5 days)
+  hour: number;
+  wordId: string;
+  exercise: ExerciseType;
+  correct: boolean;
+  errorType: ErrorType | null;
+}
 
-const DEMO_BASE_MS = 1_700_000_000_000; // fixed past timestamp for determinism
+const DEMO_BASE_MS = 1_700_000_000_000;
+const ONE_DAY_MS = 86_400_000;
+const ONE_HOUR_MS = 3_600_000;
 
 export function generateDemoHistory(): Pick<AppState, 'progress' | 'attempts' | 'isDemoData'> {
   const progress: Record<string, WordProgress> = {};
   const attempts: Attempt[] = [];
-  let attemptIdx = 0;
 
-  const boxes: Array<WordProgress['box']> = [0, 1, 1, 2, 2, 3, 3, 4, 5, 5, 1, 2, 3, 4, 1];
+  // 5-day scripted realistic nursing session sequence
+  const actions: DemoAction[] = [
+    // Day 0 (5 days ago)
+    { day: 0, hour: 9, wordId: 'kopf', exercise: 'mcq_de_en', correct: true, errorType: null },
+    { day: 0, hour: 9, wordId: 'arm', exercise: 'mcq_de_en', correct: true, errorType: null },
+    { day: 0, hour: 9, wordId: 'bein', exercise: 'mcq_de_en', correct: false, errorType: 'meaning' }, // meaning 1
+    { day: 0, hour: 10, wordId: 'hand', exercise: 'mcq_de_en', correct: false, errorType: 'article' }, // article 1
+    { day: 0, hour: 10, wordId: 'auge', exercise: 'mcq_de_en', correct: true, errorType: null },
+    { day: 0, hour: 10, wordId: 'ohr', exercise: 'mcq_de_en', correct: true, errorType: null },
+    { day: 0, hour: 11, wordId: 'mund', exercise: 'mcq_de_en', correct: false, errorType: 'spelling' }, // spelling 1
 
-  DEMO_WORD_IDS.forEach((wordId, i) => {
-    const box = boxes[i] ?? 1;
-    const prog = freshProgress(wordId);
-    prog.box = box;
-    prog.seen = box * 2 + 1;
-    prog.correct = box * 2;
-    prog.wrong = 1;
-    prog.recent = [false, true, true, true, true].slice(-Math.min(5, prog.seen));
-    prog.stubborn = false;
-    prog.lastSeenAt = DEMO_BASE_MS - i * 3_600_000;
-    prog.nextDueAt = DEMO_BASE_MS + (i % 3) * 86_400_000 - 86_400_000;
-    prog.lastPromotedDay = null;
-    progress[wordId] = prog;
+    // Day 1 (4 days ago)
+    { day: 1, hour: 14, wordId: 'kopf', exercise: 'mcq_en_de', correct: true, errorType: null },
+    { day: 1, hour: 14, wordId: 'arm', exercise: 'mcq_en_de', correct: true, errorType: null },
+    { day: 1, hour: 14, wordId: 'bein', exercise: 'mcq_de_en', correct: true, errorType: null },
+    { day: 1, hour: 15, wordId: 'hand', exercise: 'mcq_de_en', correct: false, errorType: 'article' }, // article 2
+    { day: 1, hour: 15, wordId: 'fieber', exercise: 'mcq_de_en', correct: false, errorType: 'meaning' }, // meaning 2
+    { day: 1, hour: 16, wordId: 'schmerz', exercise: 'mcq_de_en', correct: false, errorType: 'article' }, // article 3
 
-    // Add some attempts
-    for (let j = 0; j < Math.min(prog.seen, 4); j++) {
-      attempts.push({
-        id: `demo-${attemptIdx++}`,
-        wordId,
-        exercise: j % 2 === 0 ? 'mcq_de_en' : 'typed',
-        correct: j < prog.correct,
-        errorType: j === 0 ? 'article' : null,
-        isRetry: false,
-        at: DEMO_BASE_MS - (prog.seen - j) * 3_600_000,
-      });
+    // Day 2 (3 days ago)
+    { day: 2, hour: 8, wordId: 'kopf', exercise: 'fill', correct: true, errorType: null },
+    { day: 2, hour: 8, wordId: 'arm', exercise: 'fill', correct: true, errorType: null },
+    { day: 2, hour: 8, wordId: 'auge', exercise: 'mcq_en_de', correct: true, errorType: null },
+    { day: 2, hour: 9, wordId: 'ohr', exercise: 'mcq_en_de', correct: false, errorType: 'spelling' }, // spelling 2
+    { day: 2, hour: 9, wordId: 'fieber', exercise: 'mcq_de_en', correct: false, errorType: 'article' }, // article 4
+    { day: 2, hour: 10, wordId: 'schmerz', exercise: 'mcq_de_en', correct: false, errorType: 'spelling' }, // spelling 3
+
+    // Day 3 (2 days ago)
+    { day: 3, hour: 12, wordId: 'kopf', exercise: 'typed', correct: true, errorType: null },
+    { day: 3, hour: 12, wordId: 'arm', exercise: 'typed', correct: true, errorType: null },
+    { day: 3, hour: 12, wordId: 'bein', exercise: 'mcq_en_de', correct: true, errorType: null },
+    { day: 3, hour: 13, wordId: 'hand', exercise: 'mcq_de_en', correct: false, errorType: 'article' }, // article 5
+    { day: 3, hour: 13, wordId: 'nase', exercise: 'mcq_de_en', correct: true, errorType: null },
+    { day: 3, hour: 14, wordId: 'blutdruck', exercise: 'mcq_de_en', correct: true, errorType: null },
+
+    // Day 4 (yesterday / today)
+    { day: 4, hour: 17, wordId: 'kopf', exercise: 'typed', correct: true, errorType: null }, // box 5
+    { day: 4, hour: 17, wordId: 'arm', exercise: 'typed', correct: true, errorType: null }, // box 4
+    { day: 4, hour: 17, wordId: 'auge', exercise: 'fill', correct: true, errorType: null }, // box 3
+    { day: 4, hour: 18, wordId: 'fieber', exercise: 'mcq_de_en', correct: false, errorType: 'meaning' }, // meaning 3 (stubborn)
+    { day: 4, hour: 18, wordId: 'schmerz', exercise: 'mcq_de_en', correct: false, errorType: 'meaning' }, // meaning 4 (stubborn)
+    { day: 4, hour: 19, wordId: 'puls', exercise: 'mcq_de_en', correct: true, errorType: null },
+    { day: 4, hour: 19, wordId: 'temperatur', exercise: 'mcq_de_en', correct: false, errorType: 'article' }, // article 6
+  ];
+
+  let attemptCounter = 1;
+
+  for (const act of actions) {
+    const at = DEMO_BASE_MS + act.day * ONE_DAY_MS + act.hour * ONE_HOUR_MS;
+    const wordId = act.wordId;
+
+    if (!progress[wordId]) {
+      progress[wordId] = freshProgress(wordId);
     }
-  });
 
-  // Mark a couple as stubborn
-  if (progress['fieber']) {
-    progress['fieber'].recent = [false, true, false, true, false];
-    progress['fieber'].stubborn = true;
-    progress['fieber'].errorCounts.article = 2;
-  }
-  if (progress['schmerz']) {
-    progress['schmerz'].recent = [true, false, true, false, true];
-    progress['schmerz'].stubborn = true;
-    progress['schmerz'].errorCounts.spelling = 1;
+    // Apply via scheduler so box rules, error counts, and recent history are 100% consistent
+    progress[wordId] = applyResult(progress[wordId], act.correct, act.errorType, false, at);
+
+    attempts.push({
+      id: `demo-${attemptCounter++}`,
+      wordId,
+      exercise: act.exercise,
+      correct: act.correct,
+      errorType: act.errorType,
+      isRetry: false,
+      at,
+    });
   }
 
-  return { progress, attempts: attempts.slice(-500), isDemoData: true };
+  // Ensure stubborn words are in box <= 2
+  for (const p of Object.values(progress)) {
+    if (p.stubborn && p.box > 2) {
+      p.box = 2;
+    }
+  }
+
+  return { progress, attempts, isDemoData: true };
 }

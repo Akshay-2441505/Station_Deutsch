@@ -29,7 +29,7 @@ Rules:
 |---|---|---|
 | Correct, first try this session | +1, max 5 (subject to once-per-day cap) | none |
 | Correct on retry in the same session | stays where it is | none (counted as retry success) |
-| Right word, wrong article | no change | `article` |
+| Right word, wrong article | **-1**, minimum box 1 | `article` |
 | Spelling near-miss (see grading) | no change | `spelling` |
 | Wrong word or wrong meaning | move to box 1 | `meaning` |
 | Wrong plural (stretch exercise only) | no change | `plural` |
@@ -41,7 +41,9 @@ Rules:
 - Keep the last 5 results for each word (`recent`).
 - A word is stubborn when at least 2 of the last 5 results are wrong.
 - A stubborn word clears when it gets 3 correct answers in a row.
+- Promotion cap: a stubborn word cannot be promoted above box 2 until it clears.
 - Effects: next exercise for a stubborn word is forced to a recognition format (multiple choice German to English), the memory tip is shown in feedback if one exists, and the word appears at the top of the weak words list.
+- The weak words list on Home and Progress must never show a "Mastered" state: show "missed N times" instead.
 
 ## 4. Exercise types
 

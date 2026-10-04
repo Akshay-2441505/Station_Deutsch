@@ -4,7 +4,7 @@
 import React from 'react';
 
 interface PillButtonProps extends React.ButtonHTMLAttributes<HTMLButtonElement> {
-  variant?: 'primary' | 'outline' | 'on-color';
+  variant?: 'primary' | 'outline' | 'on-color' | 'on-black';
   children: React.ReactNode;
 }
 

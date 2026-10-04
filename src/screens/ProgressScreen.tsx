@@ -41,9 +41,9 @@ export default function ProgressScreen() {
   }, [progress]);
 
   const errorCounts = useMemo(() => {
-    const counts = { article: 0, spelling: 0, meaning: 0, plural: 0 };
+    const counts: Record<string, number> = { article: 0, spelling: 0, meaning: 0 };
     for (const a of attempts) {
-      if (a.errorType) counts[a.errorType]++;
+      if (a.errorType && a.errorType in counts) counts[a.errorType]++;
     }
     return counts;
   }, [attempts]);
@@ -57,7 +57,7 @@ export default function ProgressScreen() {
       <div className="content">
         {/* Words by state */}
         <section aria-labelledby="state-heading" style={{ marginBottom: 28 }}>
-          <h2 id="state-heading" className="text-small" style={{ color: 'var(--line)', marginBottom: 16, textTransform: 'uppercase', letterSpacing: '0.06em' }}>
+          <h2 id="state-heading" className="text-small" style={{ color: 'var(--line)', marginBottom: 16 }}>
             Words by state
           </h2>
           <div style={{ display: 'flex', gap: 24, flexWrap: 'wrap' }}>
@@ -75,8 +75,8 @@ export default function ProgressScreen() {
         {/* Weak words */}
         {weakWords.length > 0 && (
           <section aria-labelledby="weak-heading" style={{ marginBottom: 28 }}>
-            <h2 id="weak-heading" className="text-small" style={{ color: 'var(--line)', marginBottom: 12, textTransform: 'uppercase', letterSpacing: '0.06em' }}>
-              Weak words
+            <h2 id="weak-heading" className="text-small" style={{ color: 'var(--line)', marginBottom: 12 }}>
+              Needs attention
             </h2>
             <div className="stack" style={{ marginBottom: 16 }}>
               {weakWords.map(({ prog, word }) => (
@@ -90,7 +90,7 @@ export default function ProgressScreen() {
                 </div>
               ))}
             </div>
-            <PillButton variant="on-color" id="practise-weak-btn" onClick={() => navigate('/session')}>
+            <PillButton variant="on-black" id="practise-weak-btn" onClick={() => navigate('/session')}>
               Practise these
             </PillButton>
           </section>
@@ -100,7 +100,7 @@ export default function ProgressScreen() {
 
         {/* Mistakes by type */}
         <section aria-labelledby="errors-heading">
-          <h2 id="errors-heading" className="text-small" style={{ color: 'var(--line)', marginBottom: 12, textTransform: 'uppercase', letterSpacing: '0.06em' }}>
+          <h2 id="errors-heading" className="text-small" style={{ color: 'var(--line)', marginBottom: 12 }}>
             Mistakes by type
           </h2>
           <div className="stack">

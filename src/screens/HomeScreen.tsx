@@ -3,11 +3,10 @@
 // ============================================================
 import { useMemo } from 'react';
 import { useNavigate } from 'react-router-dom';
-import { Settings } from 'lucide-react';
+import { Settings, ChevronRight } from 'lucide-react';
 import { useAppStore } from '../store/useAppStore';
 import { now } from '../lib/clock';
 import { isDue } from '../lib/scheduler';
-import { stateLabel } from '../lib/types';
 import wordsData from '../../content/words.json';
 import type { Word } from '../lib/types';
 import PillButton from '../components/PillButton';
@@ -108,10 +107,13 @@ export default function HomeScreen() {
             <div className="stack">
               {weakWords.map((w) => {
                 const word = allWords.find((wd) => wd.id === w.wordId);
+                const totalMissed = w.errorCounts.article + w.errorCounts.meaning + w.errorCounts.spelling;
                 return word ? (
-                  <div key={w.wordId} className="text-body" style={{ display: 'flex', justifyContent: 'space-between' }}>
+                  <div key={w.wordId} className="text-body" style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
                     <span lang="de">{word.article ? `${word.article} ` : ''}{word.de}</span>
-                    <span className="badge">{stateLabel(w.box)}</span>
+                    <span className="badge" style={{ color: 'var(--coral)' }}>
+                      {totalMissed > 0 ? `missed ${totalMissed} time${totalMissed === 1 ? '' : 's'}` : 'needs practice'}
+                    </span>
                   </div>
                 ) : null;
               })}
@@ -122,11 +124,22 @@ export default function HomeScreen() {
         {/* Progress link */}
         <button
           className="text-button"
-          style={{ background: 'none', border: 'none', cursor: 'pointer', color: 'var(--grey)', textAlign: 'left' }}
+          style={{
+            background: 'none',
+            border: 'none',
+            cursor: 'pointer',
+            color: 'var(--grey)',
+            textAlign: 'left',
+            display: 'inline-flex',
+            alignItems: 'center',
+            gap: 4,
+            width: 'fit-content',
+            padding: 0,
+          }}
           id="progress-link"
           onClick={() => navigate('/progress')}
         >
-          Progress →
+          Progress <ChevronRight size={18} />
         </button>
       </div>
 

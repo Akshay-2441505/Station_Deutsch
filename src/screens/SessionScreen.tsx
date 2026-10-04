@@ -1,21 +1,22 @@
 // ============================================================
 // SessionScreen.tsx — practice session with all exercise types
 // ============================================================
-import { useState, useMemo, useRef } from 'react';
+import React, { useState, useMemo, useRef, useEffect } from 'react';
 import { useNavigate, useLocation } from 'react-router-dom';
-import { Check } from 'lucide-react';
+import { Check, X } from 'lucide-react';
 import { useAppStore } from '../store/useAppStore';
-import { composeSession, buildMcqDeEnOptions, buildMcqEnDeOptions, buildMatchPairs, insertRetry } from '../lib/session';
+import { composeSession, buildMcqDeEnOptions, buildMcqEnDeOptions, buildMatchPairs, insertRetry, shuffle } from '../lib/session';
 import { gradeTyped, gradeOption } from '../lib/grader';
 import { buildFeedback } from '../lib/feedback';
 import { now } from '../lib/clock';
 import wordsData from '../../content/words.json';
-import type { Word, SessionItem, FeedbackData, Article } from '../lib/types';
+import type { Word, SessionItem, FeedbackData, Article, MatchPair } from '../lib/types';
 import TopBar from '../components/TopBar';
 import ProgressBar from '../components/ProgressBar';
 import PillButton from '../components/PillButton';
 import FeedbackSheet from '../components/FeedbackSheet';
 import UmlautRow from '../components/UmlautRow';
+import ExerciseErrorBoundary from '../components/ExerciseErrorBoundary';
 
 const allWords = wordsData as Word[];
 const wordMap = Object.fromEntries(allWords.map((w) => [w.id, w]));
@@ -37,26 +38,65 @@ export default function SessionScreen() {
         .map((id) => wordMap[id])
         .filter(Boolean);
       return [
-        ...batchWords.map((w) => ({ wordId: w.id, exercise: 'match' as const, isRetry: false })),
+        // One match item representing the batch
+        { wordId: batchWords[0]?.id ?? '', exercise: 'match' as const, isRetry: false },
         ...batchWords.map((w) => ({ wordId: w.id, exercise: 'mcq_de_en' as const, isRetry: false })),
       ];
     }
     return composeSession({ allWords, progress, level });
   });
 
+  // Fixed denominator established at session start (Issue 1.2)
+  const [totalQuestions] = useState(() => Math.max(items.length, 1));
+
   const [itemIndex, setItemIndex] = useState(0);
   const [selected, setSelected] = useState<number | null>(null);
   const [typedWord, setTypedWord] = useState('');
   const [chosenArticle, setChosenArticle] = useState<Article | null>(null);
   const [feedback, setFeedback] = useState<FeedbackData | null>(null);
-  const [matchSelected, setMatchSelected] = useState<{ de: string | null; en: string | null }>({ de: null, en: null });
-  const [matchedPairs, setMatchedPairs] = useState<Set<string>>(new Set());
-  const [wrongPair, setWrongPair] = useState<string | null>(null);
   const [sessionResults, setSessionResults] = useState<Array<{ wordId: string; correct: boolean }>>([]);
   const typedRef = useRef<HTMLInputElement>(null);
 
   const currentItem = items[itemIndex];
   const currentWord = currentItem ? wordMap[currentItem.wordId] : null;
+
+  // Track progress counter
+  const completedNonRetries = items.slice(0, itemIndex).filter((i) => !i.isRetry).length;
+  const currentQuestionNum = Math.min(completedNonRetries + (currentItem?.isRetry ? 0 : 1), totalQuestions);
+
+  // Match pairs state (Issue 1.1)
+  const [matchTiles, setMatchTiles] = useState<{ de: MatchPair[]; en: MatchPair[] }>({ de: [], en: [] });
+  const [selectedTile, setSelectedTile] = useState<{ side: 'de' | 'en'; wordId: string } | null>(null);
+  const [matchedWordIds, setMatchedWordIds] = useState<Set<string>>(new Set());
+  const [wrongTileIds, setWrongTileIds] = useState<{ de: string | null; en: string | null }>({ de: null, en: null });
+  const [slips, setSlips] = useState<Record<string, number>>({});
+  const [matchFeedback, setMatchFeedback] = useState<FeedbackData | null>(null);
+
+  // Initialize match exercise tiles whenever item changes to a match item
+  useEffect(() => {
+    if (currentItem?.exercise === 'match' && currentWord) {
+      let pool: Word[] = [];
+      if (locationState?.learnBatchIds) {
+        pool = locationState.learnBatchIds.map((id) => wordMap[id]).filter(Boolean);
+      }
+      if (pool.length < 4) {
+        const others = allWords.filter(
+          (w) => w.id !== currentWord.id && (w.level === level || w.topic === currentWord.topic)
+        );
+        pool = [currentWord, ...shuffle(others).slice(0, 3)];
+      }
+      const pairs = buildMatchPairs(pool, 4);
+      setMatchTiles({
+        de: shuffle(pairs),
+        en: shuffle(pairs),
+      });
+      setSelectedTile(null);
+      setMatchedWordIds(new Set());
+      setWrongTileIds({ de: null, en: null });
+      setSlips({});
+      setMatchFeedback(null);
+    }
+  }, [itemIndex, currentItem?.exercise, currentWord?.id]);
 
   // Build options for MCQ
   const mcqDeEnOptions = useMemo(() => {
@@ -68,15 +108,6 @@ export default function SessionScreen() {
     if (!currentWord || currentItem?.exercise !== 'mcq_en_de') return [];
     return buildMcqEnDeOptions(currentWord, allWords);
   }, [currentWord, currentItem?.exercise]);
-
-  // Build match pairs (for the current group of match items)
-  const matchWords = useMemo(() => {
-    if (currentItem?.exercise !== 'match') return [];
-    const matchItems = items.filter((i) => i.exercise === 'match');
-    return matchItems.map((i) => wordMap[i.wordId]).filter(Boolean) as Word[];
-  }, [items, currentItem?.exercise]);
-
-  const matchPairs = useMemo(() => buildMatchPairs(matchWords, Math.min(matchWords.length, 5)), [matchWords]);
 
   if (!level || !currentItem || !currentWord) {
     return (
@@ -159,6 +190,7 @@ export default function SessionScreen() {
 
   const handleContinue = () => {
     setFeedback(null);
+    setMatchFeedback(null);
     setSelected(null);
     setTypedWord('');
     setChosenArticle(null);
@@ -184,36 +216,74 @@ export default function SessionScreen() {
     }, 0);
   };
 
-  // Handle match exercise
-  const handleMatchDe = (de: string) => {
-    if (matchedPairs.has(de)) return;
-    setMatchSelected((s) => ({ ...s, de }));
-    checkMatch({ de, en: matchSelected.en });
-  };
+  // Match exercise handlers (Issue 1.1)
+  const handleSelectTile = (side: 'de' | 'en', wordId: string) => {
+    if (matchedWordIds.has(wordId) || wrongTileIds.de || wrongTileIds.en) return;
 
-  const handleMatchEn = (en: string) => {
-    if ([...matchedPairs].some((p) => matchPairs.find((m) => m.de === p)?.en === en)) return;
-    setMatchSelected((s) => ({ ...s, en }));
-    checkMatch({ de: matchSelected.de, en });
-  };
+    if (!selectedTile) {
+      setSelectedTile({ side, wordId });
+      return;
+    }
 
-  const checkMatch = ({ de, en }: { de: string | null; en: string | null }) => {
-    if (!de || !en) return;
-    const pair = matchPairs.find((p) => p.de === de);
-    if (pair?.en === en) {
-      setMatchedPairs((s) => new Set([...s, de]));
-      setMatchSelected({ de: null, en: null });
-      // When all matched, advance
-      if (matchedPairs.size + 1 >= matchPairs.length) {
-        setTimeout(() => handleContinue(), 600);
+    if (selectedTile.side === side) {
+      // Switch selected tile on same side
+      setSelectedTile({ side, wordId });
+      return;
+    }
+
+    // Comparing tiles from opposite sides
+    const deId = side === 'de' ? wordId : selectedTile.wordId;
+    const enId = side === 'en' ? wordId : selectedTile.wordId;
+
+    if (deId === enId) {
+      // Correct match!
+      const nextMatched = new Set(matchedWordIds);
+      nextMatched.add(deId);
+      setMatchedWordIds(nextMatched);
+      setSelectedTile(null);
+
+      // Check if all pairs matched
+      if (nextMatched.size >= matchTiles.de.length) {
+        const totalSlips = Object.values(slips).reduce((a, b) => a + b, 0);
+        setMatchFeedback({
+          correct: true,
+          errorType: null,
+          headline: 'All matched!',
+          body: `${matchTiles.de.length} of ${matchTiles.de.length} matched${totalSlips > 0 ? `, with ${totalSlips} slip${totalSlips === 1 ? '' : 's'}` : ''}.`,
+          tip: null,
+        });
       }
     } else {
-      setWrongPair(de);
+      // Mismatch
+      setSlips((prev) => ({
+        ...prev,
+        [deId]: (prev[deId] ?? 0) + 1,
+        [enId]: (prev[enId] ?? 0) + 1,
+      }));
+      setWrongTileIds({ de: deId, en: enId });
       setTimeout(() => {
-        setWrongPair(null);
-        setMatchSelected({ de: null, en: null });
-      }, 800);
+        setWrongTileIds({ de: null, en: null });
+        setSelectedTile(null);
+      }, 700);
     }
+  };
+
+  const handleMatchComplete = () => {
+    // Record one attempt per matched word
+    matchTiles.de.forEach((p) => {
+      const slipCount = slips[p.wordId] ?? 0;
+      const isCorrect = slipCount === 0;
+      recordAttempt({
+        wordId: p.wordId,
+        exercise: 'match',
+        correct: isCorrect,
+        errorType: isCorrect ? null : 'meaning',
+        isRetry: currentItem.isRetry,
+        at: now(),
+      });
+      setSessionResults((r) => [...r, { wordId: p.wordId, correct: isCorrect }]);
+    });
+    handleContinue();
   };
 
   const isCheckable =
@@ -231,217 +301,305 @@ export default function SessionScreen() {
       <TopBar
         variant="close"
         onAction={() => navigate('/home')}
-        right={<span className="text-small">{itemIndex + 1}/{items.length}</span>}
+        right={
+          <div style={{ display: 'flex', alignItems: 'center', gap: 8 }}>
+            {currentItem.isRetry && (
+              <span
+                className="chip"
+                style={{
+                  background: 'var(--coral)',
+                  color: 'var(--black)',
+                  fontWeight: 600,
+                  fontSize: 12,
+                  height: 22,
+                  padding: '0 8px',
+                }}
+              >
+                Retry
+              </span>
+            )}
+            <span className="text-small">{currentQuestionNum}/{totalQuestions}</span>
+          </div>
+        }
       />
 
       <div style={{ paddingBottom: 12 }}>
         <ProgressBar
-          value={itemIndex / items.length}
-          label={`Question ${itemIndex + 1} of ${items.length}`}
+          value={Math.min(completedNonRetries / totalQuestions, 1)}
+          label={`Question ${currentQuestionNum} of ${totalQuestions}`}
         />
       </div>
 
       <div className="content" style={{ opacity: feedback ? 0.4 : 1, transition: 'opacity 0.1s' }}>
-        {/* MCQ de→en */}
-        {currentItem.exercise === 'mcq_de_en' && (
-          <>
-            <p className="text-body" style={{ color: 'var(--grey)', marginBottom: 8 }}>
-              What does this mean?
-            </p>
-            <p className="text-title" lang="de" style={{ marginBottom: 32 }}>
-              {currentWord.article ? `${currentWord.article} ` : ''}{currentWord.de}
-            </p>
-            <div className="stack">
-              {mcqDeEnOptions.map((opt, i) => (
-                <button
-                  key={i}
-                  className={`option-btn ${selected === i ? 'option-btn--selected' : ''}`}
-                  onClick={() => setSelected(i)}
-                  id={`mcq-opt-${i}`}
-                  aria-pressed={selected === i}
-                >
-                  {opt.text}
-                </button>
-              ))}
-            </div>
-          </>
-        )}
+        <ExerciseErrorBoundary exerciseKey={`${currentItem.wordId}-${itemIndex}`} onSkip={handleContinue}>
+          {/* MCQ de→en */}
+          {currentItem.exercise === 'mcq_de_en' && (
+            <>
+              <p className="text-body" style={{ color: 'var(--grey)', marginBottom: 8 }}>
+                What does this mean?
+              </p>
+              <p className="text-title" lang="de" style={{ marginBottom: 32 }}>
+                {currentWord.article ? `${currentWord.article} ` : ''}{currentWord.de}
+              </p>
+              <div className="stack">
+                {mcqDeEnOptions.map((opt, i) => {
+                  const isSelected = selected === i;
+                  const isCorrect = opt.isCorrect;
+                  const showResult = feedback !== null;
+                  const isWrongSelected = showResult && isSelected && !isCorrect;
+                  const isCorrectOpt = showResult && isCorrect;
 
-        {/* MCQ en→de */}
-        {currentItem.exercise === 'mcq_en_de' && (
-          <>
-            <p className="text-body" style={{ color: 'var(--grey)', marginBottom: 8 }}>
-              Which is correct?
-            </p>
-            <p className="text-title" style={{ marginBottom: 32 }}>{currentWord.en}</p>
-            <div className="stack">
-              {mcqEnDeOptions.map((opt, i) => (
-                <button
-                  key={i}
-                  className={`option-btn ${selected === i ? 'option-btn--selected' : ''}`}
-                  onClick={() => setSelected(i)}
-                  id={`mcq-en-opt-${i}`}
-                  aria-pressed={selected === i}
-                  lang="de"
-                >
-                  {opt.text}
-                </button>
-              ))}
-            </div>
-          </>
-        )}
+                  let btnClass = 'option-btn';
+                  if (isCorrectOpt) btnClass += ' option-btn--correct';
+                  else if (isWrongSelected) btnClass += ' option-btn--wrong';
+                  else if (isSelected) btnClass += ' option-btn--selected';
 
-        {/* Article drill */}
-        {currentItem.exercise === 'article' && (
-          <>
-            <p className="text-body" style={{ color: 'var(--grey)', marginBottom: 8 }}>
-              What is the article?
-            </p>
-            <p className="text-title" lang="de" style={{ marginBottom: 32 }}>{currentWord.de}</p>
-            <div style={{ display: 'flex', gap: 12 }}>
-              {(['der', 'die', 'das'] as Article[]).map((art) => (
-                <button
-                  key={art}
-                  className={`option-btn ${chosenArticle === art ? 'option-btn--selected' : ''}`}
-                  style={{ flex: 1 }}
-                  onClick={() => setChosenArticle(art)}
-                  aria-pressed={chosenArticle === art}
-                  id={`article-${art}`}
-                  lang="de"
-                >
-                  {art}
-                </button>
-              ))}
-            </div>
-          </>
-        )}
+                  const style: React.CSSProperties = showResult && !isCorrectOpt && !isWrongSelected ? { opacity: 0.4 } : {};
 
-        {/* Fill in the blank */}
-        {currentItem.exercise === 'fill' && fillSentence && (
-          <>
-            <p className="text-body" style={{ color: 'var(--grey)', marginBottom: 8 }}>
-              Fill in the blank
-            </p>
-            <p className="text-title" lang="de" style={{ marginBottom: 8 }}>
-              {fillSentence.de.replace(fillSentence.blank, '___')}
-            </p>
-            <p className="text-small" style={{ color: 'var(--grey)', marginBottom: 24 }}>
-              {fillSentence.en.replace(currentWord.en, '___')}
-            </p>
-            <UmlautRow onInsert={insertUmlaut} />
-            <input
-              ref={typedRef}
-              type="text"
-              value={typedWord}
-              onChange={(e) => setTypedWord(e.target.value)}
-              placeholder={`Type the missing word`}
-              id="fill-input"
-              aria-label="Type the missing word"
-              style={{
-                width: '100%',
-                height: 56,
-                border: '2px solid var(--black)',
-                borderRadius: 999,
-                padding: '0 20px',
-                fontFamily: 'var(--font-sans)',
-                fontSize: 17,
-                marginTop: 12,
-              }}
-              onKeyDown={(e) => e.key === 'Enter' && isCheckable && handleCheck()}
-            />
-          </>
-        )}
-
-        {/* Typed recall */}
-        {currentItem.exercise === 'typed' && (
-          <>
-            <p className="text-body" style={{ color: 'var(--grey)', marginBottom: 8 }}>
-              Type the German word
-            </p>
-            <p className="text-title" style={{ marginBottom: 24 }}>{currentWord.en}</p>
-
-            {currentWord.pos === 'noun' && currentWord.article && (
-              <div style={{ display: 'flex', gap: 12, marginBottom: 16 }}>
-                {(['der', 'die', 'das'] as Article[]).map((art) => (
-                  <button
-                    key={art}
-                    className={`option-btn ${chosenArticle === art ? 'option-btn--selected' : ''}`}
-                    style={{ flex: 1 }}
-                    onClick={() => setChosenArticle(art)}
-                    aria-pressed={chosenArticle === art}
-                    id={`typed-article-${art}`}
-                    lang="de"
-                  >
-                    {art}
-                  </button>
-                ))}
+                  return (
+                    <button
+                      key={i}
+                      className={btnClass}
+                      style={style}
+                      onClick={() => !feedback && setSelected(i)}
+                      id={`mcq-opt-${i}`}
+                      aria-pressed={isSelected}
+                      disabled={feedback !== null}
+                    >
+                      <span>{opt.text}</span>
+                      {isCorrectOpt && <Check size={20} strokeWidth={2.5} style={{ flexShrink: 0 }} />}
+                      {isWrongSelected && <X size={20} strokeWidth={2.5} style={{ flexShrink: 0 }} />}
+                    </button>
+                  );
+                })}
               </div>
-            )}
+            </>
+          )}
 
-            <UmlautRow onInsert={insertUmlaut} />
-            <input
-              ref={typedRef}
-              type="text"
-              value={typedWord}
-              onChange={(e) => setTypedWord(e.target.value)}
-              placeholder="Type in German"
-              id="typed-input"
-              aria-label="Type the German word"
-              style={{
-                width: '100%',
-                height: 56,
-                border: '2px solid var(--black)',
-                borderRadius: 999,
-                padding: '0 20px',
-                fontFamily: 'var(--font-sans)',
-                fontSize: 17,
-                marginTop: 12,
-              }}
-              onKeyDown={(e) => e.key === 'Enter' && isCheckable && handleCheck()}
-            />
-          </>
-        )}
+          {/* MCQ en→de */}
+          {currentItem.exercise === 'mcq_en_de' && (
+            <>
+              <p className="text-body" style={{ color: 'var(--grey)', marginBottom: 8 }}>
+                Which is correct?
+              </p>
+              <p className="text-title" style={{ marginBottom: 32 }}>{currentWord.en}</p>
+              <div className="stack">
+                {mcqEnDeOptions.map((opt, i) => {
+                  const isSelected = selected === i;
+                  const isCorrect = opt.isCorrect;
+                  const showResult = feedback !== null;
+                  const isWrongSelected = showResult && isSelected && !isCorrect;
+                  const isCorrectOpt = showResult && isCorrect;
 
-        {/* Match pairs */}
-        {currentItem.exercise === 'match' && (
-          <>
-            <p className="text-body" style={{ color: 'var(--grey)', marginBottom: 16 }}>
-              Match the pairs
-            </p>
-            <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 8 }}>
-              {matchPairs.map((pair) => {
-                const isMatchedDe = matchedPairs.has(pair.de);
-                const isSelectedDe = matchSelected.de === pair.de;
-                const isWrong = wrongPair === pair.de;
-                return (
-                  <button
-                    key={`de-${pair.de}`}
-                    className={`match-tile ${isMatchedDe ? 'match-tile--matched' : isWrong ? 'match-tile--wrong' : isSelectedDe ? 'match-tile--selected' : ''}`}
-                    onClick={() => handleMatchDe(pair.de)}
-                    lang="de"
-                    disabled={isMatchedDe}
-                  >
-                    {pair.de}
-                  </button>
-                );
-              })}
-              {matchPairs.map((pair) => {
-                const isMatchedEn = matchedPairs.has(pair.de);
-                const isSelectedEn = matchSelected.en === pair.en;
-                return (
-                  <button
-                    key={`en-${pair.en}`}
-                    className={`match-tile ${isMatchedEn ? 'match-tile--matched' : isSelectedEn ? 'match-tile--selected' : ''}`}
-                    onClick={() => handleMatchEn(pair.en)}
-                    disabled={isMatchedEn}
-                  >
-                    {pair.en}
-                  </button>
-                );
-              })}
-            </div>
-          </>
-        )}
+                  let btnClass = 'option-btn';
+                  if (isCorrectOpt) btnClass += ' option-btn--correct';
+                  else if (isWrongSelected) btnClass += ' option-btn--wrong';
+                  else if (isSelected) btnClass += ' option-btn--selected';
+
+                  const style: React.CSSProperties = showResult && !isCorrectOpt && !isWrongSelected ? { opacity: 0.4 } : {};
+
+                  return (
+                    <button
+                      key={i}
+                      className={btnClass}
+                      style={style}
+                      onClick={() => !feedback && setSelected(i)}
+                      id={`mcq-en-opt-${i}`}
+                      aria-pressed={isSelected}
+                      lang="de"
+                      disabled={feedback !== null}
+                    >
+                      <span>{opt.text}</span>
+                      {isCorrectOpt && <Check size={20} strokeWidth={2.5} style={{ flexShrink: 0 }} />}
+                      {isWrongSelected && <X size={20} strokeWidth={2.5} style={{ flexShrink: 0 }} />}
+                    </button>
+                  );
+                })}
+              </div>
+            </>
+          )}
+
+          {/* Article drill */}
+          {currentItem.exercise === 'article' && (
+            <>
+              <p className="text-body" style={{ color: 'var(--grey)', marginBottom: 8 }}>
+                What is the article?
+              </p>
+              <p className="text-title" lang="de" style={{ marginBottom: 32 }}>{currentWord.de}</p>
+              <div style={{ display: 'flex', gap: 12 }}>
+                {(['der', 'die', 'das'] as Article[]).map((art) => {
+                  const isSelected = chosenArticle === art;
+                  const isCorrect = art === currentWord.article;
+                  const showResult = feedback !== null;
+                  const isWrongSelected = showResult && isSelected && !isCorrect;
+                  const isCorrectOpt = showResult && isCorrect;
+
+                  let btnClass = 'option-btn';
+                  if (isCorrectOpt) btnClass += ' option-btn--correct';
+                  else if (isWrongSelected) btnClass += ' option-btn--wrong';
+                  else if (isSelected) btnClass += ' option-btn--selected';
+
+                  const style: React.CSSProperties = {
+                    flex: 1,
+                    ...(showResult && !isCorrectOpt && !isWrongSelected ? { opacity: 0.4 } : {}),
+                  };
+
+                  return (
+                    <button
+                      key={art}
+                      className={btnClass}
+                      style={style}
+                      onClick={() => !feedback && setChosenArticle(art)}
+                      aria-pressed={isSelected}
+                      id={`article-${art}`}
+                      lang="de"
+                      disabled={feedback !== null}
+                    >
+                      <span>{art}</span>
+                      {isCorrectOpt && <Check size={18} strokeWidth={2.5} />}
+                      {isWrongSelected && <X size={18} strokeWidth={2.5} />}
+                    </button>
+                  );
+                })}
+              </div>
+            </>
+          )}
+
+          {/* Fill in the blank */}
+          {currentItem.exercise === 'fill' && fillSentence && (
+            <>
+              <p className="text-body" style={{ color: 'var(--grey)', marginBottom: 8 }}>
+                Fill in the blank
+              </p>
+              <p className="text-title" lang="de" style={{ marginBottom: 8 }}>
+                {fillSentence.de.replace(fillSentence.blank, '___')}
+              </p>
+              <p className="text-small" style={{ color: 'var(--grey)', marginBottom: 24 }}>
+                {fillSentence.en.replace(currentWord.en, '___')}
+              </p>
+              <UmlautRow onInsert={insertUmlaut} />
+              <input
+                ref={typedRef}
+                type="text"
+                value={typedWord}
+                onChange={(e) => setTypedWord(e.target.value)}
+                placeholder="Type the missing word"
+                id="fill-input"
+                aria-label="Type the missing word"
+                style={{
+                  width: '100%',
+                  height: 56,
+                  border: '2px solid var(--black)',
+                  borderRadius: 999,
+                  padding: '0 20px',
+                  fontFamily: 'var(--font-sans)',
+                  fontSize: 17,
+                  marginTop: 12,
+                }}
+                onKeyDown={(e) => e.key === 'Enter' && isCheckable && handleCheck()}
+              />
+            </>
+          )}
+
+          {/* Typed recall */}
+          {currentItem.exercise === 'typed' && (
+            <>
+              <p className="text-body" style={{ color: 'var(--grey)', marginBottom: 8 }}>
+                Type the German word
+              </p>
+              <p className="text-title" style={{ marginBottom: 24 }}>{currentWord.en}</p>
+
+              {currentWord.pos === 'noun' && currentWord.article && (
+                <div style={{ display: 'flex', gap: 12, marginBottom: 16 }}>
+                  {(['der', 'die', 'das'] as Article[]).map((art) => (
+                    <button
+                      key={art}
+                      className={`option-btn ${chosenArticle === art ? 'option-btn--selected' : ''}`}
+                      style={{ flex: 1 }}
+                      onClick={() => setChosenArticle(art)}
+                      aria-pressed={chosenArticle === art}
+                      id={`typed-article-${art}`}
+                      lang="de"
+                    >
+                      {art}
+                    </button>
+                  ))}
+                </div>
+              )}
+
+              <UmlautRow onInsert={insertUmlaut} />
+              <input
+                ref={typedRef}
+                type="text"
+                value={typedWord}
+                onChange={(e) => setTypedWord(e.target.value)}
+                placeholder="Type in German"
+                id="typed-input"
+                aria-label="Type the German word"
+                style={{
+                  width: '100%',
+                  height: 56,
+                  border: '2px solid var(--black)',
+                  borderRadius: 999,
+                  padding: '0 20px',
+                  fontFamily: 'var(--font-sans)',
+                  fontSize: 17,
+                  marginTop: 12,
+                }}
+                onKeyDown={(e) => e.key === 'Enter' && isCheckable && handleCheck()}
+              />
+            </>
+          )}
+
+          {/* Match pairs (Issue 1.1) */}
+          {currentItem.exercise === 'match' && (
+            <>
+              <p className="text-body" style={{ color: 'var(--grey)', marginBottom: 16 }}>
+                Match the pairs
+              </p>
+              <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 12 }}>
+                {/* German column */}
+                <div style={{ display: 'flex', flexDirection: 'column', gap: 8 }}>
+                  {matchTiles.de.map((pair) => {
+                    const isMatched = matchedWordIds.has(pair.wordId);
+                    const isSelected = selectedTile?.side === 'de' && selectedTile.wordId === pair.wordId;
+                    const isWrong = wrongTileIds.de === pair.wordId;
+                    return (
+                      <button
+                        key={`de-${pair.wordId}`}
+                        className={`match-tile ${isMatched ? 'match-tile--matched' : isWrong ? 'match-tile--wrong' : isSelected ? 'match-tile--selected' : ''}`}
+                        onClick={() => handleSelectTile('de', pair.wordId)}
+                        lang="de"
+                        disabled={isMatched}
+                      >
+                        {pair.de}
+                      </button>
+                    );
+                  })}
+                </div>
+
+                {/* English column (independently randomized) */}
+                <div style={{ display: 'flex', flexDirection: 'column', gap: 8 }}>
+                  {matchTiles.en.map((pair) => {
+                    const isMatched = matchedWordIds.has(pair.wordId);
+                    const isSelected = selectedTile?.side === 'en' && selectedTile.wordId === pair.wordId;
+                    const isWrong = wrongTileIds.en === pair.wordId;
+                    return (
+                      <button
+                        key={`en-${pair.wordId}`}
+                        className={`match-tile ${isMatched ? 'match-tile--matched' : isWrong ? 'match-tile--wrong' : isSelected ? 'match-tile--selected' : ''}`}
+                        onClick={() => handleSelectTile('en', pair.wordId)}
+                        disabled={isMatched}
+                      >
+                        {pair.en}
+                      </button>
+                    );
+                  })}
+                </div>
+              </div>
+            </>
+          )}
+        </ExerciseErrorBoundary>
       </div>
 
       {/* Action zone */}
@@ -461,6 +619,10 @@ export default function SessionScreen() {
 
       {feedback && (
         <FeedbackSheet feedback={feedback} onContinue={handleContinue} />
+      )}
+
+      {matchFeedback && (
+        <FeedbackSheet feedback={matchFeedback} onContinue={handleMatchComplete} />
       )}
     </div>
   );

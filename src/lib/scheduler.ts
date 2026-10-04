@@ -80,6 +80,15 @@ export function applyResult(
   // --- Box transitions ---
   const todayKey = dayKey(atMs);
 
+  // Update stubborn status
+  if (prog.stubborn) {
+    // Already stubborn: only clears when 3 correct in a row
+    next.stubborn = !isStubbornnessCleared(next.recent);
+  } else {
+    // Becomes stubborn if ≥ 2 of last 5 are wrong
+    next.stubborn = isStubborn(next.recent);
+  }
+
   if (prog.box === 0) {
     // First-ever answer: always moves to box 1
     next.box = 1;
@@ -87,16 +96,22 @@ export function applyResult(
     // Wrong first answer still logged as error (already done above)
   } else if (isRetry) {
     // Retry: no box change, no due update (per §6)
-    // nothing to do for box
   } else if (correct) {
     // Correct, first try this session
     if (errorType === null) {
       // Check once-per-day cap
       if (prog.lastPromotedDay !== todayKey && prog.box < 5) {
-        next.box = (prog.box + 1) as WordProgress['box'];
-        next.lastPromotedDay = todayKey;
+        let candidateBox = (prog.box + 1) as WordProgress['box'];
+        // V2 rule: A stubborn word cannot be promoted above box 2 until it clears
+        if (next.stubborn && candidateBox > 2) {
+          candidateBox = 2;
+        }
+        if (candidateBox !== prog.box) {
+          next.box = candidateBox;
+          next.lastPromotedDay = todayKey;
+        }
       }
-      // Whether promoted or not, set nextDueAt from the new box
+      // Set nextDueAt from the new box
       next.nextDueAt = atMs + intervalMs(next.box as 1|2|3|4|5);
     }
   } else {
@@ -105,14 +120,15 @@ export function applyResult(
       // Wrong word/meaning: demote to box 1
       next.box = 1;
       next.nextDueAt = atMs + intervalMs(1);
-    } else if (errorType === 'article' || errorType === 'spelling' || errorType === 'plural') {
-      // No box change — just update due time from current box
+    } else if (errorType === 'article') {
+      // V2 rule: Right word, wrong article: -1, minimum box 1, logged article
+      next.box = Math.max(1, prog.box - 1) as WordProgress['box'];
+      next.nextDueAt = atMs + intervalMs(next.box as 1|2|3|4|5);
+    } else if (errorType === 'spelling' || errorType === 'plural') {
+      // Spelling near-miss: no box change, just update due time from current box
       next.nextDueAt = atMs + intervalMs(next.box as 1|2|3|4|5);
     }
   }
-
-  // Update stubborn status
-  next.stubborn = isStubborn(next.recent);
 
   return next;
 }
