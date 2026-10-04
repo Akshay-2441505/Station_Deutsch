@@ -82,8 +82,39 @@ function qualifies(word: Word, type: ExerciseType, stretchEnabled: boolean): boo
 }
 
 // ---------------------------------------------------------------------------
-// Distractor generator
+// Distractor generator & overlap prevention
 // ---------------------------------------------------------------------------
+
+const STOP_WORDS = new Set([
+  'a', 'an', 'the', 'to', 'in', 'on', 'of', 'and', 'or', 'for', 'with', 'at', 'by',
+  'from', 'is', 'it', 'my', 'your', 'his', 'her', 'their', 'our', 'be', 'you', 'me', 'him', 'them'
+]);
+
+export function extractContentWords(text: string): Set<string> {
+  const words = text
+    .toLowerCase()
+    .replace(/[^\w\s]/g, ' ')
+    .split(/\s+/)
+    .filter((w) => w.length > 1 && !STOP_WORDS.has(w));
+  return new Set(words);
+}
+
+export function sharesContentWord(textA: string, textB: string): boolean {
+  const setA = extractContentWords(textA);
+  const setB = extractContentWords(textB);
+  for (const word of setA) {
+    if (setB.has(word)) return true;
+  }
+  return false;
+}
+
+export function isValidDistractor(target: Word, candidate: Word): boolean {
+  if (candidate.id === target.id) return false;
+  if (target.conflicts?.includes(candidate.id)) return false;
+  if (candidate.conflicts?.includes(target.id)) return false;
+  if (sharesContentWord(target.en, candidate.en)) return false;
+  return true;
+}
 
 /**
  * Generate MCQ options for mcq_de_en (German→English meaning choice).
@@ -96,7 +127,7 @@ export function buildMcqDeEnOptions(
 ): DistractorOption[] {
   const pool = allWords.filter(
     (w) =>
-      w.id !== target.id &&
+      isValidDistractor(target, w) &&
       w.pos === target.pos &&
       w.topic === target.topic,
   );
@@ -106,11 +137,21 @@ export function buildMcqDeEnOptions(
   if (distractors.length < 3) {
     const extra = allWords.filter(
       (w) =>
-        w.id !== target.id &&
+        isValidDistractor(target, w) &&
         w.pos === target.pos &&
         !distractors.find((d) => d.id === w.id),
     );
     distractors.push(...shuffle(extra).slice(0, 3 - distractors.length));
+  }
+
+  // Fallback if still not enough
+  if (distractors.length < 3) {
+    const fallback = allWords.filter(
+      (w) =>
+        isValidDistractor(target, w) &&
+        !distractors.find((d) => d.id === w.id),
+    );
+    distractors.push(...shuffle(fallback).slice(0, 3 - distractors.length));
   }
 
   const options: DistractorOption[] = [
@@ -132,12 +173,12 @@ export function buildMcqDeEnOptions(
 export function buildMcqEnDeOptions(target: Word, allWords: Word[]): DistractorOption[] {
   const articles = ['der', 'die', 'das'] as const;
   const wrongArticles = articles.filter((a) => a !== target.article);
-  const wrongArticle = wrongArticles[0];
+  const wrongArticle = wrongArticles[0] ?? 'der';
 
   // Two other nouns from same topic (or fallback to any noun)
   const otherNouns = allWords.filter(
     (w) =>
-      w.id !== target.id &&
+      isValidDistractor(target, w) &&
       w.pos === 'noun' &&
       w.article !== null,
   );

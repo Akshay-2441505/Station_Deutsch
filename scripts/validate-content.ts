@@ -36,6 +36,7 @@ const WordSchema = z.object({
     status: z.enum(['unverified', 'verified']),
     sources: z.array(z.string()),
   }),
+  conflicts: z.array(z.string()).optional(),
 });
 
 const PlacementItemSchema = z.object({
@@ -140,6 +141,26 @@ for (const w of words) {
 if (sentenceOk) pass('Sentence rules: all correct');
 if (emptySentence.length > 0) {
   warn(`Entries with no sentences (must be fixed before shipping): ${emptySentence.join(', ')}`);
+}
+
+// 0.4 ASCII umlaut warning rule
+const asciiUmlautPattern = /(ae|oe|ue)/i;
+const knownLegitAscii = new Set(['feuer', 'neue', 'treue', 'abenteuer', 'knie', 'patient']);
+for (const w of words) {
+  if (asciiUmlautPattern.test(w.de) && !knownLegitAscii.has(w.de.toLowerCase())) {
+    warn(`${w.id}: headword "${w.de}" contains ae/oe/ue where an umlaut (ä/ö/ü) is likely`);
+  }
+}
+
+// 0.7 Conflicts validation
+for (const w of words) {
+  if (w.conflicts) {
+    for (const cid of w.conflicts) {
+      if (!words.some((other) => other.id === cid)) {
+        fail(`${w.id}: conflict ID "${cid}" does not exist in words.json`);
+      }
+    }
+  }
 }
 
 // Level coverage per topic

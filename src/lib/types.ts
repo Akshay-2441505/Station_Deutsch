@@ -42,6 +42,7 @@ export interface Word {
     status: 'unverified' | 'verified';
     sources: string[];    // required when status is 'verified'
   };
+  conflicts?: string[];   // word IDs that must never appear together as options
 }
 
 export interface WordProgress {

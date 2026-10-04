@@ -12,11 +12,8 @@
     ],
     "answerIndex": 0,
     "verification": {
-      "status": "verified",
-      "sources": [
-        "Goethe-Institut A1/A2 Wortliste",
-        "Duden"
-      ]
+      "status": "unverified",
+      "sources": []
     }
   },
   {
@@ -31,11 +28,8 @@
     ],
     "answerIndex": 2,
     "verification": {
-      "status": "verified",
-      "sources": [
-        "Goethe-Institut A1/A2 Wortliste",
-        "Duden"
-      ]
+      "status": "unverified",
+      "sources": []
     }
   },
   {
@@ -51,11 +45,8 @@
     ],
     "answerIndex": 1,
     "verification": {
-      "status": "verified",
-      "sources": [
-        "Goethe-Institut A1/A2 Wortliste",
-        "Duden"
-      ]
+      "status": "unverified",
+      "sources": []
     }
   },
   {
@@ -70,11 +61,8 @@
     ],
     "answerIndex": 1,
     "verification": {
-      "status": "verified",
-      "sources": [
-        "Goethe-Institut A1/A2 Wortliste",
-        "Duden"
-      ]
+      "status": "unverified",
+      "sources": []
     }
   },
   {
@@ -90,11 +78,8 @@
     ],
     "answerIndex": 1,
     "verification": {
-      "status": "verified",
-      "sources": [
-        "Goethe-Institut A1/A2 Wortliste",
-        "Duden"
-      ]
+      "status": "unverified",
+      "sources": []
     }
   },
   {
@@ -110,11 +95,8 @@
     ],
     "answerIndex": 1,
     "verification": {
-      "status": "verified",
-      "sources": [
-        "Goethe-Institut A1/A2 Wortliste",
-        "Duden"
-      ]
+      "status": "unverified",
+      "sources": []
     }
   },
   {
@@ -129,11 +111,8 @@
     ],
     "answerIndex": 1,
     "verification": {
-      "status": "verified",
-      "sources": [
-        "Goethe-Institut A1/A2 Wortliste",
-        "Duden"
-      ]
+      "status": "unverified",
+      "sources": []
     }
   },
   {
@@ -149,11 +128,8 @@
     ],
     "answerIndex": 0,
     "verification": {
-      "status": "verified",
-      "sources": [
-        "Goethe-Institut A1/A2 Wortliste",
-        "Duden"
-      ]
+      "status": "unverified",
+      "sources": []
     }
   }
 ]

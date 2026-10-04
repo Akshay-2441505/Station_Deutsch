@@ -94,6 +94,7 @@ interface Word {
     status: 'unverified' | 'verified';
     sources: string[];    // required when status is 'verified'
   };
+  conflicts?: string[];   // word IDs that must never appear together as options
 }
 
 interface WordProgress {
@@ -210,6 +211,14 @@ Note that the second example has an empty `sentences` array, which breaks the "a
 ### `content/placement.json`
 
 An array of `PlacementItem`: 5 items tagged A1 and 3 tagged A2. Separate from `words.json`.
+
+### `content/words.parked.json`
+
+Entries moved out of the active learning bank (e.g. advanced or specialized words pending owner review). Not loaded by the application at runtime.
+
+### Human Verification Worksheet
+
+Generated via `npm run content:worksheet` into `content/verification-worksheet.md`. Contains links to Wiktionary and Duden for manual human verification before release.
 
 ### Content pipeline (build time, outside the app)
 

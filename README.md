@@ -28,7 +28,7 @@ The app addresses:
   ┌────────────────────────────────────────────────────────┐
   │                       Home Screen                      │
   │     • Today's goal (e.g. 4/10 answers)                 │
-  │     • Top 3 stubborn / weak words                      │
+  │     • Top stubborn / weak words                        │
   │     • Caught-up state when no reviews due              │
   └─────────────┬───────────────────────────┬──────────────┘
                 │                           │
@@ -55,17 +55,6 @@ The app addresses:
                                 └──────────────────────────┘
 ```
 
-### Leitner Scheduling & Mastery Engine
-- **Box 0 (Unseen)**: Words start here until first attempted.
-- **Box 1 (Review immediately)**: Due every day.
-- **Box 2 (1-day interval)**: Due after 24 hours.
-- **Box 3 (3-day interval)**: Due after 3 days.
-- **Box 4 (7-day interval)**: Due after 7 days.
-- **Box 5 (14-day interval / Mastered)**: Due after 14 days.
-- **Daily Promotion Cap**: A word can advance at most one box per calendar day (per app clock), preventing artificial cramming.
-- **Demotion**: Wrong headword reset to Box 1. Article or spelling near-miss does not demote box level but is tracked for targeted drill.
-- **Stubborn Word Tracking**: Words with $\ge 2$ mistakes in the last 5 attempts are flagged as stubborn and surfaced on the Home and Progress screens. Clears after 3 consecutive correct answers.
-
 ---
 
 ## 3. How to Run the Project
@@ -89,71 +78,74 @@ Open [http://localhost:5173](http://localhost:5173) in your browser.
 ```bash
 npm run test
 ```
-Runs all 67 Vitest tests across `scheduler`, `grader`, `placement`, and `session`.
 
-### Validate Content
+### Content Validation & Verification Worksheet
 ```bash
 # Standard validation
 npm run validate:content
 
-# Strict pre-deploy verification check
+# Strict validation (requires all entries to have verified checkable sources)
 npm run validate:content -- --strict
+
+# Generate human verification worksheet
+npm run content:worksheet
 ```
 
 ### Build for Production
 ```bash
 npm run build
 ```
-Typechecks using TypeScript and compiles the optimized production bundle into the `dist/` folder.
 
 ---
 
-## 4. How Content Was Generated and Verified
+## 4. Content Status
 
-All clinical vocabulary was curated for hospital nurses working in German-speaking countries:
+The active vocabulary bank is validated via `scripts/validate-content.ts`. Words requiring owner review or deemed above beginner level are parked in `content/words.parked.json`.
 
-1. **Selection & Curation**: 65 core headwords mapped across 5 clinical topics:
-   - `body`: Anatomical terms frequently referenced in physical exams and patient reports (Kopf, Bein, Hand, Herz, Lunge, Magen, etc.).
-   - `symptoms`: Patient complaints and triage indicators (Fieber, Schmerz, Husten, Schwindel, Übelkeit, etc.).
-   - `care`: Bedside procedures and nursing tasks (waschen, messen, Verbandwechsel, Spritze, Katheter, etc.).
-   - `ward`: Station environment and administration (Krankenhaus, Notaufnahme, Visite, Bett, Station, etc.).
-   - `patient`: Patient demographics, states, and interactions (Patient, Ärztin, Blutdruck, etc.).
-2. **Schema & Syntactic Quality**: Each entry includes grammatical article, plural forms, level (A1/A2), and at least one contextual sample sentence containing the target word in a cloze blank.
-3. **Verification against Standard References**: All 65 words and 8 placement check items were verified against:
-   - **Goethe-Institut Zertifikat A1 / A2 Wortliste**
-   - **Duden Deutsches Universalwörterbuch**
-   Each record in `content/words.json` and `content/placement.json` carries `"verification": { "status": "verified", "sources": [...] }`.
-4. **Automated Content Validator**: The validator script (`scripts/validate-content.ts`) enforces:
-   - Unique IDs across all entries.
-   - Noun article consistency (only nouns have articles; verbs/adjectives/phrases do not).
-   - Plural rules (pluralOnly words have `plural: null`).
-   - Sentence integrity (every blank exists verbatim in the German example sentence).
-   - Distractor minimums ($\ge 4$ words per topic and level).
+Run `npm run validate:content` to view live counts from the validator:
 
----
+| Metric | Active Word Bank (`words.json`) | Placement (`placement.json`) | Parked (`words.parked.json`) |
+|---|---|---|---|
+| **Total Entries** | 60 | 8 | 10 |
+| **Verified** | 0 | 0 | 0 |
+| **Unverified** | 60 | 8 | 10 |
 
-## 5. Known Limitations
+### Breakdown by Topic & Level (Active Bank)
+- **`body`**: 11 at A1, 3 at A2 (14 total)
+- **`symptoms`**: 10 at A1, 3 at A2 (13 total)
+- **`care`**: 11 at A1, 1 at A2 (12 total)
+- **`ward`**: 7 at A1, 4 at A2 (11 total)
+- **`patient`**: 6 at A1, 4 at A2 (10 total)
 
-- **Browser-local Storage**: User progress is saved exclusively in `localStorage` under key `station-deutsch:v1`. Progress does not synchronize across separate devices or browser private sessions. If local storage is disabled or blocked, the app warns the user and falls back to an in-memory session store.
-- **Device Speech Synthesis Dependency**: Audio pronunciation uses the browser's native `window.speechSynthesis` with German locale (`de-DE`). If the user's device lacks a German speech synthesis pack, audio controls gracefully hide with an explanatory toast.
+*Note: All entries are currently marked `unverified` with sources cleared until human verification against Goethe-Institut A1/A2 word lists and Duden is completed via `content/verification-worksheet.md`.*
 
 ---
 
-## 6. What We Would Build Next
+## 5. Why No Login Yet
+
+- **Prototype Focus**: The initial project specification focuses on rapid validation of the core spaced-repetition and exercise loop between hospital shifts.
+- **Zero Friction**: Requiring account creation or authentication creates unnecessary friction for reviewers and early testers trying the tool for 3–5 minutes.
+- **Next Steps**: A future iteration will introduce optional cloud authentication to synchronize Leitner box progress across desktop and mobile devices.
+
+---
+
+## 6. What I Would Build Next
 
 1. **Audio Listen Mode (`listen`)**: Browser speech synthesis dictation exercise where nurses listen to spoken German orders or symptoms and select the corresponding English meaning.
 2. **Plural Form Drills (`plural`)**: Specific drills for irregular medical plurals (e.g., *das Bett* $\rightarrow$ *die Betten*, *der Magen* $\rightarrow$ *die Mägen*).
 3. **Progressive Web App (PWA) Offline Support**: Service worker and web manifest allowing Indian nurses on ward night shifts to open and practice offline without cellular reception.
 4. **Clinical Mistake Explainer**: On-demand breakdown of false friends (e.g., *Gift* vs *poison*, *bekommen* vs *become*) and case declensions (*den Blutdruck messen* vs *der Blutdruck*).
+5. **My Mistakes (`#/mistakes`)**: A dedicated review screen grouping missed items with direct retry drills.
 
 ---
 
-## 7. Tester Log (3–5 Testers)
+## 7. Test Log (Template)
 
-| Tester | Background | Feedback / Observations | Changes Made |
-|---|---|---|---|
-| **Tester 1 (Priya R.)** | Indian staff nurse preparing for B1 Pflege | Found the German headwords on the lemon card very readable. Confused about whether "Got it" / "Not yet" counts as an answer test. | Clarified in UI: Learn mode is review-only; actual box progression happens in Practice sessions. Added explicit feedback banner. |
-| **Tester 2 (Ananya S.)** | Nursing student | Struggled on phone typing umlauts (*ä*, *ö*, *ü*, *ß*) on standard English mobile keyboard. | Added dedicated 44px `UmlautRow` buttons above the keyboard for one-tap umlaut insertion at cursor position. |
-| **Tester 3 (Dr. Markus K.)** | German language instructor for healthcare | Recommended adding clearer distinction for plural-only medical terms (e.g. *Kopfschmerzen*). | Added `pluralOnly` attribute in data model; updated grader and UI to enforce correct article `die` without plural drill. |
-| **Tester 4 (Rahul M.)** | Clinical nurse specialist | Liked the "Simulate tomorrow" button in Settings to verify Leitner spaced repetition without having to wait 24 hours. | Verified simulated clock offset properly triggers due words and updates streak/review counters. |
-| **Tester 5 (Kavita D.)** | General nurse | Tested with browser storage restricted (Private Browsing with quota blocked). | Confirmed storage-blocked banner displays cleanly without throwing runtime exceptions; progress gracefully stored in memory. |
+> To be filled by the project owner with real tester feedback.
+
+| Date | Tester Type | Task Tested | What Broke / Confused | What Changed |
+|---|---|---|---|---|
+| *YYYY-MM-DD* | *e.g. Nurse / Student / Trainer* | *e.g. Learn batch -> Practice* | *Observations* | *Action taken* |
+| | | | | |
+| | | | | |
+| | | | | |
