@@ -189,33 +189,49 @@ export function exportProgress(state: AppState): string {
   return JSON.stringify(state, null, 2);
 }
 
+export interface ValidationResult {
+  success: boolean;
+  valid: boolean;
+  data?: AppState;
+  state?: AppState;
+  error?: string;
+}
+
 /**
- * 3.6 Validate imported progress
+ * 3.6 Validate imported progress (accepts JSON string or parsed object)
  */
 export function validateImportedProgress(
-  jsonString: string,
-): { success: boolean; data?: AppState; error?: string } {
+  input: unknown,
+): ValidationResult {
   try {
-    const parsed = JSON.parse(jsonString);
-    if (!parsed || typeof parsed !== 'object') {
-      return { success: false, error: 'File is not a valid JSON object.' };
+    let parsed: any;
+    if (typeof input === 'string') {
+      parsed = JSON.parse(input);
+    } else {
+      parsed = input;
+    }
+
+    if (!parsed || typeof parsed !== 'object' || Array.isArray(parsed)) {
+      return { success: false, valid: false, error: 'File is not a valid JSON object.' };
     }
     if (parsed.version !== 2) {
       return {
         success: false,
+        valid: false,
         error: `Incompatible data version. Station Deutsch requires version 2 (found version ${parsed.version ?? 'unknown'}).`,
       };
     }
-    if (!parsed.progress || typeof parsed.progress !== 'object') {
-      return { success: false, error: 'Missing or invalid "progress" dictionary.' };
+    if (!parsed.progress || typeof parsed.progress !== 'object' || Array.isArray(parsed.progress)) {
+      return { success: false, valid: false, error: 'Missing or invalid "progress" dictionary.' };
     }
     if (!Array.isArray(parsed.attempts)) {
-      return { success: false, error: 'Missing or invalid "attempts" array.' };
+      return { success: false, valid: false, error: 'Missing or invalid "attempts" array.' };
     }
-    return { success: true, data: parsed as AppState };
+    return { success: true, valid: true, data: parsed as AppState, state: parsed as AppState };
   } catch (err: unknown) {
     return {
       success: false,
+      valid: false,
       error: `Invalid JSON format: ${err instanceof Error ? err.message : 'Syntax error'}`,
     };
   }

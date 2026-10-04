@@ -13,29 +13,42 @@ export default function AudioButton({ text }: AudioButtonProps) {
   const [playing, setPlaying] = useState(false);
 
   useEffect(() => {
+    if (typeof window === 'undefined' || !('speechSynthesis' in window)) {
+      setHasVoice(false);
+      return;
+    }
     function checkVoices() {
-      const voices = speechSynthesis.getVoices();
-      const german = voices.find((v) => v.lang.startsWith('de'));
-      setHasVoice(!!german);
+      try {
+        const voices = window.speechSynthesis.getVoices();
+        const german = voices.find((v) => v.lang.startsWith('de'));
+        setHasVoice(!!german);
+      } catch {
+        setHasVoice(false);
+      }
     }
     checkVoices();
-    speechSynthesis.addEventListener('voiceschanged', checkVoices);
-    return () => speechSynthesis.removeEventListener('voiceschanged', checkVoices);
+    window.speechSynthesis.addEventListener?.('voiceschanged', checkVoices);
+    return () => window.speechSynthesis.removeEventListener?.('voiceschanged', checkVoices);
   }, []);
 
   if (hasVoice === false) return null;
 
   const speak = () => {
-    if (playing) { speechSynthesis.cancel(); setPlaying(false); return; }
-    const utt = new SpeechSynthesisUtterance(text);
-    utt.lang = 'de-DE';
-    const voices = speechSynthesis.getVoices();
-    const german = voices.find((v) => v.lang.startsWith('de'));
-    if (german) utt.voice = german;
-    utt.onend = () => setPlaying(false);
-    utt.onerror = () => setPlaying(false);
-    setPlaying(true);
-    speechSynthesis.speak(utt);
+    if (typeof window === 'undefined' || !('speechSynthesis' in window)) return;
+    try {
+      if (playing) { window.speechSynthesis.cancel(); setPlaying(false); return; }
+      const utt = new SpeechSynthesisUtterance(text);
+      utt.lang = 'de-DE';
+      const voices = window.speechSynthesis.getVoices();
+      const german = voices.find((v) => v.lang.startsWith('de'));
+      if (german) utt.voice = german;
+      utt.onend = () => setPlaying(false);
+      utt.onerror = () => setPlaying(false);
+      setPlaying(true);
+      window.speechSynthesis.speak(utt);
+    } catch {
+      setPlaying(false);
+    }
   };
 
   return (
