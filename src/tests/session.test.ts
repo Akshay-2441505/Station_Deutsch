@@ -4,9 +4,17 @@
 
 import { describe, it, expect, beforeEach } from 'vitest';
 import { setDayOffset, now } from '../lib/clock';
-import { composeSession, insertRetry, composeLearnBatch, buildMcqDeEnOptions } from '../lib/session';
+import {
+  composeSession,
+  insertRetry,
+  composeLearnBatch,
+  buildMcqDeEnOptions,
+  buildMcqEnDeOptions,
+  sharesContentWord,
+} from '../lib/session';
 import { freshProgress, applyResult, isDue } from '../lib/scheduler';
-import type { Word, WordProgress } from '../lib/types';
+import type { Word, WordProgress, Topic } from '../lib/types';
+import realWordsData from '../../content/words.json';
 
 beforeEach(() => setDayOffset(0));
 
@@ -196,3 +204,79 @@ describe('clock integration — simulate tomorrow makes box 2 due', () => {
     expect(isDue(p2, now())).toBe(true);
   });
 });
+
+describe('A2 Mode: distractor validity and no dead-ends', () => {
+  const realWords = realWordsData as Word[];
+  const a2Words = realWords.filter((w) => w.level === 'A2');
+  const topics: Topic[] = ['body', 'symptoms', 'care', 'ward', 'patient'];
+
+  it('has A2 words across all 5 topics', () => {
+    for (const t of topics) {
+      const topicA2 = a2Words.filter((w) => w.topic === t);
+      expect(topicA2.length).toBeGreaterThan(0);
+    }
+  });
+
+  it('generates 4 valid distractors for every A2 word in every topic', () => {
+    for (const word of a2Words) {
+      const deEnOptions = buildMcqDeEnOptions(word, realWords);
+      expect(deEnOptions.length).toBe(4);
+      expect(deEnOptions.filter((o) => o.isCorrect).length).toBe(1);
+      // No overlap in meaning with correct answer
+      for (const distractor of deEnOptions.filter((o) => !o.isCorrect)) {
+        expect(sharesContentWord(distractor.text, word.en)).toBe(false);
+      }
+
+      if (word.article) {
+        const enDeOptions = buildMcqEnDeOptions(word, realWords);
+        expect(enDeOptions.length).toBe(4);
+        expect(enDeOptions.filter((o) => o.isCorrect).length).toBe(1);
+      }
+    }
+  });
+
+  it('composes a full 10-item session for A2 mode without dead-ending, even with 0 or 1 active word', () => {
+    // Test with fresh progress (no words active)
+    const emptySession = composeSession({
+      allWords: realWords,
+      progress: {},
+      level: 'A2',
+      targetCount: 10,
+    });
+    expect(emptySession.length).toBe(10);
+    for (const item of emptySession) {
+      expect(item.wordId).toBeTruthy();
+      expect(item.exercise).toBeTruthy();
+    }
+
+    // Test with only 1 A2 word active (e.g. care topic)
+    const singleWord = a2Words.find((w) => w.topic === 'care')!;
+    const singleProg: Record<string, WordProgress> = {
+      [singleWord.id]: {
+        ...freshProgress(singleWord.id),
+        box: 1,
+      },
+    };
+    const sessionWithOne = composeSession({
+      allWords: realWords,
+      progress: singleProg,
+      level: 'A2',
+      targetCount: 10,
+    });
+    expect(sessionWithOne.length).toBe(10);
+
+    // Test topic-pool practice for each topic in A2
+    for (const t of topics) {
+      const topicPool = a2Words.filter((w) => w.topic === t).map((w) => w.id);
+      const topicSession = composeSession({
+        allWords: realWords,
+        progress: {},
+        level: 'A2',
+        pool: topicPool,
+        targetCount: 10,
+      });
+      expect(topicSession.length).toBe(10);
+    }
+  });
+});
+

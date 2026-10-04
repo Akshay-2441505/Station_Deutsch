@@ -158,19 +158,42 @@ export default function HomeScreen() {
         <h1 id="today-heading" className="text-small" style={{ color: 'var(--black)', opacity: 0.75, marginBottom: 4 }}>
           Today
         </h1>
-        <div
-          style={{
-            fontFamily: 'var(--font-serif)',
-            fontSize: 40,
-            lineHeight: '44px',
-            fontWeight: 700,
-            marginBottom: 12,
-            letterSpacing: '-0.02em',
-          }}
-        >
-          {todayAnswers} of {DAILY_GOAL}
-        </div>
-        <ProgressBar value={todayAnswers / DAILY_GOAL} label={`${todayAnswers} of ${DAILY_GOAL} answers today`} />
+        {todayAnswers >= DAILY_GOAL ? (
+          <div>
+            <div
+              style={{
+                fontFamily: 'var(--font-serif)',
+                fontSize: 36,
+                lineHeight: '40px',
+                fontWeight: 700,
+                marginBottom: 4,
+                letterSpacing: '-0.02em',
+              }}
+            >
+              Goal reached
+            </div>
+            <p className="text-small" style={{ color: 'var(--black)', opacity: 0.85, marginBottom: 12, fontWeight: 600 }}>
+              {todayAnswers} answers today
+            </p>
+          </div>
+        ) : (
+          <div
+            style={{
+              fontFamily: 'var(--font-serif)',
+              fontSize: 40,
+              lineHeight: '44px',
+              fontWeight: 700,
+              marginBottom: 12,
+              letterSpacing: '-0.02em',
+            }}
+          >
+            {todayAnswers} of {DAILY_GOAL}
+          </div>
+        )}
+        <ProgressBar
+          value={Math.min(todayAnswers / DAILY_GOAL, 1)}
+          label={todayAnswers >= DAILY_GOAL ? `Goal reached · ${todayAnswers} answers today` : `${todayAnswers} of ${DAILY_GOAL} answers today`}
+        />
 
         {isCaughtUp && (
           <p className="text-small" style={{ color: 'var(--black)', opacity: 0.8, marginTop: 12 }}>
@@ -273,24 +296,29 @@ export default function HomeScreen() {
                 ) : null;
               })}
             </div>
-            {/* 3.5 Share weak words */}
-            <button
-              onClick={handleShareWeakWords}
-              style={{
-                background: 'none',
-                border: 'none',
-                cursor: 'pointer',
-                color: 'var(--grey)',
-                fontSize: 14,
-                fontWeight: 600,
-                textDecoration: 'underline',
-                textAlign: 'left',
-                padding: 0,
-              }}
-              id="share-weak-btn"
-            >
-              Share my weak words
-            </button>
+            {/* 3.5 Send weak words on WhatsApp */}
+            <div style={{ marginTop: 14 }}>
+              <button
+                onClick={handleShareWeakWords}
+                style={{
+                  background: 'none',
+                  border: 'none',
+                  cursor: 'pointer',
+                  color: 'var(--black)',
+                  fontSize: 14,
+                  fontWeight: 600,
+                  textDecoration: 'underline',
+                  textAlign: 'left',
+                  padding: 0,
+                }}
+                id="share-weak-btn"
+              >
+                Send my weak words on WhatsApp
+              </button>
+              <p className="text-small" style={{ color: 'var(--grey)', marginTop: 4, fontSize: 13 }}>
+                Share your stubborn words with a trainer or colleague to review together.
+              </p>
+            </div>
           </section>
         )}
 

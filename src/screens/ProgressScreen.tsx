@@ -17,17 +17,20 @@ export default function ProgressScreen() {
   const navigate = useNavigate();
   const progress = useAppStore((s) => s.progress);
   const attempts = useAppStore((s) => s.attempts);
+  const level = useAppStore((s) => s.level ?? 'A1');
+
+  const levelWords = useMemo(() => allWords.filter((w) => w.level === level), [level]);
 
   const stateCounts = useMemo(() => {
     const counts = { New: 0, Learning: 0, Familiar: 0, Strong: 0, Mastered: 0 };
-    for (const word of allWords) {
+    for (const word of levelWords) {
       const prog = progress[word.id];
       const box = prog?.box ?? 0;
       const label = stateLabel(box);
       counts[label]++;
     }
     return counts;
-  }, [progress]);
+  }, [progress, levelWords]);
 
   const weakWords = useMemo(() => {
     return Object.values(progress)
@@ -58,14 +61,60 @@ export default function ProgressScreen() {
       <div className="content">
         {/* Words by state */}
         <section aria-labelledby="state-heading" style={{ marginBottom: 28 }}>
-          <h2 id="state-heading" className="text-small" style={{ color: 'var(--line)', marginBottom: 16 }}>
-            Words by state
-          </h2>
-          <div style={{ display: 'flex', gap: 24, flexWrap: 'wrap' }}>
+          <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'baseline', marginBottom: 16 }}>
+            <h2 id="state-heading" className="text-small" style={{ color: 'var(--line)' }}>
+              Words by state
+            </h2>
+            <span className="text-small" style={{ color: 'var(--grey)', fontSize: 13 }}>
+              Level {level} ({levelWords.length} words)
+            </span>
+          </div>
+          <div
+            style={{
+              display: 'grid',
+              gridTemplateColumns: 'repeat(5, 1fr)',
+              gap: 4,
+              textAlign: 'center',
+            }}
+          >
             {(Object.entries(stateCounts) as Array<[string, number]>).map(([label, count]) => (
-              <div key={label} style={{ textAlign: 'center' }}>
-                <div className="text-stat" style={{ color: 'var(--lemon)' }}>{count}</div>
-                <div className="text-small" style={{ color: 'var(--line)' }}>{label}</div>
+              <div
+                key={label}
+                style={{
+                  background: 'rgba(255, 255, 255, 0.05)',
+                  padding: '10px 2px',
+                  borderRadius: 12,
+                  display: 'flex',
+                  flexDirection: 'column',
+                  alignItems: 'center',
+                  minWidth: 0,
+                }}
+              >
+                <div
+                  style={{
+                    fontFamily: 'var(--font-serif)',
+                    fontSize: 24,
+                    lineHeight: '28px',
+                    fontWeight: 700,
+                    color: 'var(--lemon)',
+                    marginBottom: 2,
+                  }}
+                >
+                  {count}
+                </div>
+                <div
+                  style={{
+                    color: 'var(--line)',
+                    fontSize: 11,
+                    fontWeight: 500,
+                    whiteSpace: 'nowrap',
+                    overflow: 'hidden',
+                    textOverflow: 'ellipsis',
+                    width: '100%',
+                  }}
+                >
+                  {label}
+                </div>
               </div>
             ))}
           </div>
@@ -77,7 +126,7 @@ export default function ProgressScreen() {
         {weakWords.length > 0 && (
           <section aria-labelledby="weak-heading" style={{ marginBottom: 28 }}>
             <h2 id="weak-heading" className="text-small" style={{ color: 'var(--line)', marginBottom: 12 }}>
-              Needs attention
+              Weak words ({weakWords.length})
             </h2>
             <div className="stack" style={{ marginBottom: 16 }}>
               {weakWords.map(({ prog, word }) => (

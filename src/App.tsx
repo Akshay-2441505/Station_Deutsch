@@ -45,15 +45,50 @@ function DesktopShell({ children }: { children: React.ReactNode }) {
           <h1 className="desktop-narrative__title">{DESKTOP_TEXT.title}</h1>
           <p className="desktop-narrative__tagline">{DESKTOP_TEXT.tagline}</p>
         </div>
-        <div className="desktop-narrative__loop">
-          {DESKTOP_TEXT.sentences.map((sentence, idx) => (
-            <p key={idx} className="desktop-narrative__p">
-              {sentence}
-            </p>
-          ))}
+        <p className="desktop-narrative__p" style={{ marginBottom: 20 }}>
+          {DESKTOP_TEXT.description}
+        </p>
+
+        <div style={{ marginBottom: 24 }}>
+          <h2 style={{ fontSize: 14, fontWeight: 700, color: 'var(--lemon)', marginBottom: 12 }}>
+            {DESKTOP_TEXT.guideTitle}
+          </h2>
+          <div style={{ display: 'flex', flexDirection: 'column', gap: 12 }}>
+            {DESKTOP_TEXT.steps.map((st) => (
+              <div key={st.num} style={{ display: 'flex', gap: 10, alignItems: 'flex-start' }}>
+                <span
+                  style={{
+                    display: 'inline-flex',
+                    alignItems: 'center',
+                    justifyContent: 'center',
+                    width: 22,
+                    height: 22,
+                    borderRadius: '50%',
+                    background: '#1F2937',
+                    color: 'var(--lemon)',
+                    fontSize: 12,
+                    fontWeight: 700,
+                    flexShrink: 0,
+                    marginTop: 1,
+                  }}
+                >
+                  {st.num}
+                </span>
+                <div>
+                  <strong style={{ fontSize: 13, color: 'var(--white)', display: 'block', marginBottom: 2 }}>
+                    {st.title}
+                  </strong>
+                  <span style={{ fontSize: 12, lineHeight: '18px', color: '#9CA3AF', display: 'block' }}>
+                    {st.text}
+                  </span>
+                </div>
+              </div>
+            ))}
+          </div>
         </div>
+
         <div className="desktop-narrative__badge">
-          Prototype Preview
+          {DESKTOP_TEXT.badge}
         </div>
       </aside>
 

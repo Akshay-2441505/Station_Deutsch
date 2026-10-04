@@ -319,30 +319,53 @@ export function composeSession(params: SessionComposerParams): SessionItem[] {
     if (!selected.find((w) => w.id === word.id)) selected.push(word);
   }
 
+  // If still fewer than targetCount, draw other words at this level
+  if (selected.length < targetCount) {
+    for (const word of levelWords) {
+      if (selected.length >= targetCount) break;
+      if (!selected.find((w) => w.id === word.id)) selected.push(word);
+    }
+  }
+
+  // If still fewer than targetCount, draw from allWords
+  if (selected.length < targetCount) {
+    for (const word of allWords) {
+      if (selected.length >= targetCount) break;
+      if (!selected.find((w) => w.id === word.id)) selected.push(word);
+    }
+  }
+
   selected.splice(targetCount);
 
-  const recentTypes: ExerciseType[] = [];
+  const maxPerWord = selected.length * 2 < targetCount ? Math.ceil(targetCount / Math.max(1, selected.length)) : 2;
   const seenCount: Record<string, number> = {};
+  const recentTypes: ExerciseType[] = [];
   const items: SessionItem[] = [];
 
-  for (const word of selected) {
-    seenCount[word.id] = (seenCount[word.id] ?? 0) + 1;
-    if (seenCount[word.id] > 2) continue; // max 2× per session
+  let passes = 0;
+  while (items.length < targetCount && selected.length > 0 && passes < 10) {
+    passes++;
+    for (const word of selected) {
+      if (items.length >= targetCount) break;
+      if ((seenCount[word.id] ?? 0) >= maxPerWord) continue;
 
-    const prog = progress[word.id];
-    const box = prog?.box ?? 1;
-    const stubborn = prog?.stubborn ?? false;
+      seenCount[word.id] = (seenCount[word.id] ?? 0) + 1;
 
-    const exercise = chooseExercise({
-      word,
-      box: box as WordProgress['box'],
-      stubborn,
-      recentTypes,
-      level,
-    });
+      const prog = progress[word.id];
+      const box = prog?.box ?? 1;
+      const stubborn = prog?.stubborn ?? false;
 
-    recentTypes.push(exercise);
-    items.push({ wordId: word.id, exercise, isRetry: false });
+      const exercise = chooseExercise({
+        word,
+        box: box as WordProgress['box'],
+        stubborn,
+        recentTypes,
+        level,
+      });
+
+      recentTypes.push(exercise);
+      items.push({ wordId: word.id, exercise, isRetry: false });
+    }
   }
 
   return items;

@@ -695,8 +695,7 @@ body:has(.screen--coral)  { background: var(--coral); }
     font-weight: 600;
     color: var(--line);
     width: fit-content;
-    letter-spacing: 0.04em;
-    text-transform: uppercase;
+    letter-spacing: 0.01em;
   }
 
   .desktop-device-container {
@@ -707,16 +706,22 @@ body:has(.screen--coral)  { background: var(--coral); }
 
   .desktop-device-frame {
     width: 390px;
-    height: 820px;
+    height: min(820px, calc(100dvh - 48px));
     border: 8px solid #000000;
     border-radius: 36px;
     outline: 2px solid #2B2B2B;
     overflow-y: auto;
     overflow-x: hidden;
+    scrollbar-width: none;
+    -ms-overflow-style: none;
     position: relative;
     box-shadow: 0 25px 70px rgba(0, 0, 0, 0.75), 0 0 0 1px rgba(255, 255, 255, 0.08);
     background: var(--white);
     transform: translateZ(0); /* create containing block for fixed positioning */
+  }
+
+  .desktop-device-frame::-webkit-scrollbar {
+    display: none;
   }
 
   .desktop-device-frame .screen {

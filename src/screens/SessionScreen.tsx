@@ -84,9 +84,12 @@ export default function SessionScreen() {
         pool = locationState.learnBatchIds.map((id) => wordMap[id]).filter(Boolean);
       }
       if (pool.length < 4) {
-        const others = allWords.filter(
+        let others = allWords.filter(
           (w) => w.id !== currentWord.id && (w.level === level || w.topic === currentWord.topic)
         );
+        if (others.length < 3) {
+          others = allWords.filter((w) => w.id !== currentWord.id);
+        }
         pool = [currentWord, ...shuffle(others).slice(0, 3)];
       }
       const pairs = buildMatchPairs(pool, 4);
