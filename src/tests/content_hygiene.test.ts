@@ -38,23 +38,30 @@ describe('0.3 Parked words', () => {
     'bettlaegerig',
   ];
 
-  it('content/words.parked.json exists and contains all parked words', () => {
+  it('content/words.parked.json exists as a valid JSON array', () => {
     const parkedFile = resolve(root, 'content/words.parked.json');
     expect(existsSync(parkedFile)).toBe(true);
-    const parked = JSON.parse(readFileSync(parkedFile, 'utf8')) as Word[];
-    const parkedFoundIds = parked.map((w) => w.id.toLowerCase());
-    for (const expectedId of parkedIds) {
-      const match = parkedFoundIds.some((id) => id.includes(expectedId) || expectedId.includes(id));
-      expect(match, `Expected ${expectedId} to be in words.parked.json`).toBe(true);
-    }
+    const parked = JSON.parse(readFileSync(parkedFile, 'utf8'));
+    expect(Array.isArray(parked)).toBe(true);
   });
 
-  it('none of the parked words remain in content/words.json', () => {
+  it('restored A2 words conform to schema with unverified status and proper umlauts', () => {
     const words = JSON.parse(readFileSync(resolve(root, 'content/words.json'), 'utf8')) as Word[];
-    const wordIds = words.map((w) => w.id.toLowerCase());
-    for (const id of parkedIds) {
-      const found = wordIds.includes(id);
-      expect(found, `Expected ${id} to NOT be in words.json`).toBe(false);
+    for (const expectedId of parkedIds) {
+      const match = words.some((w) => w.id.toLowerCase().includes(expectedId));
+      expect(match, `Expected ${expectedId} to be restored in words.json`).toBe(true);
+    }
+
+    const bettlaegerig = words.find((w) => w.id === 'bettlaegerig');
+    expect(bettlaegerig).toBeDefined();
+    expect(bettlaegerig?.de).toBe('bettlägerig');
+    expect(bettlaegerig?.verification.status).toBe('unverified');
+
+    // Confirm every topic at A2 now has at least 4 entries for distractors
+    const topics = ['body', 'symptoms', 'care', 'ward', 'patient'] as const;
+    for (const t of topics) {
+      const a2InTopic = words.filter((w) => w.topic === t && w.level === 'A2');
+      expect(a2InTopic.length).toBeGreaterThanOrEqual(4);
     }
   });
 });

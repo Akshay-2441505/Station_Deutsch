@@ -114,16 +114,16 @@ Run `npm run validate:content` to view live counts from the validator:
 
 | Metric | Active Word Bank (`words.json`) | Placement (`placement.json`) | Parked (`words.parked.json`) |
 |---|---|---|---|
-| **Total Entries** | 60 | 8 | 10 |
+| **Total Entries** | 70 | 8 | 0 |
 | **Verified** | 0 | 0 | 0 |
-| **Unverified** | 60 | 8 | 10 |
+| **Unverified** | 70 | 8 | 0 |
 
 ### Breakdown by Topic & Level (Active Bank)
-- **`body`**: 11 at A1, 3 at A2 (14 total)
-- **`symptoms`**: 10 at A1, 3 at A2 (13 total)
-- **`care`**: 11 at A1, 1 at A2 (12 total)
+- **`body`**: 11 at A1, 4 at A2 (15 total)
+- **`symptoms`**: 10 at A1, 7 at A2 (17 total)
+- **`care`**: 11 at A1, 5 at A2 (16 total)
 - **`ward`**: 7 at A1, 4 at A2 (11 total)
-- **`patient`**: 6 at A1, 4 at A2 (10 total)
+- **`patient`**: 6 at A1, 5 at A2 (11 total)
 
 *Note: All entries are currently marked `unverified` with sources cleared until human verification against Goethe-Institut A1/A2 word lists and Duden is completed via `content/verification-worksheet.md`.*
 
