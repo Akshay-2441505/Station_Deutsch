@@ -36,8 +36,8 @@ export default function WordDetailModal({
 
   const box = progress?.box ?? 0;
   const state = stateLabel(box);
-  const example = word.sentences[0];
-  const totalMissed = progress
+  const example = word.sentences?.[0];
+  const totalMissed = progress?.errorCounts
     ? (progress.errorCounts.article ?? 0) +
       (progress.errorCounts.meaning ?? 0) +
       (progress.errorCounts.spelling ?? 0)
@@ -64,11 +64,12 @@ export default function WordDetailModal({
         right: 0,
         bottom: 0,
         background: 'rgba(0, 0, 0, 0.65)',
-        zIndex: 50,
+        zIndex: 100,
         display: 'flex',
         flexDirection: 'column',
         justifyContent: 'flex-end',
         backdropFilter: 'blur(2px)',
+        overflow: 'hidden',
       }}
       onClick={(e) => {
         if (e.target === e.currentTarget) onClose();
@@ -79,19 +80,38 @@ export default function WordDetailModal({
           background: 'var(--white)',
           borderTopLeftRadius: 28,
           borderTopRightRadius: 28,
-          padding: '24px 24px calc(24px + env(safe-area-inset-bottom, 0px))',
-          maxHeight: '90%',
+          borderBottomLeftRadius: 0,
+          borderBottomRightRadius: 0,
+          padding: '24px 20px calc(24px + env(safe-area-inset-bottom, 0px))',
+          maxHeight: '88%',
           overflowY: 'auto',
           display: 'flex',
           flexDirection: 'column',
-          boxShadow: '0 -10px 40px rgba(0, 0, 0, 0.25)',
-          animation: 'slideUp 0.2s cubic-bezier(0.16, 1, 0.3, 1)',
+          boxShadow: '0 -10px 40px rgba(0, 0, 0, 0.35)',
+          animation: 'slideUp 0.22s cubic-bezier(0.16, 1, 0.3, 1)',
         }}
       >
         {/* Header bar */}
         <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: 16 }}>
           <div style={{ display: 'flex', alignItems: 'center', gap: 8 }}>
-            {word.article && <ArticleChip article={word.article} />}
+            {word.article ? (
+              <ArticleChip article={word.article} />
+            ) : (
+              <span
+                className="chip"
+                style={{
+                  background: 'var(--gray-light, #F1F5F9)',
+                  color: 'var(--grey)',
+                  fontSize: 12,
+                  fontWeight: 600,
+                  height: 28,
+                  padding: '0 8px',
+                  border: '1px solid var(--line)',
+                }}
+              >
+                {word.pos}
+              </span>
+            )}
             <span
               className="chip"
               style={{
@@ -120,13 +140,13 @@ export default function WordDetailModal({
 
         {/* Word + Audio row */}
         <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start', marginBottom: 8 }}>
-          <div>
+          <div style={{ flex: 1, paddingRight: 12 }}>
             <h2
               id="detail-word-title"
               lang="de"
               style={{
                 fontFamily: 'var(--font-serif)',
-                fontSize: word.de.length > 12 ? 28 : 34,
+                fontSize: word.de.length > 14 ? 26 : 32,
                 lineHeight: '1.2',
                 fontWeight: 700,
                 color: 'var(--black)',
@@ -136,7 +156,7 @@ export default function WordDetailModal({
             >
               {word.de}
             </h2>
-            <p className="text-meaning" style={{ fontSize: 20, color: 'var(--grey)', fontWeight: 500 }}>
+            <p className="text-meaning" style={{ fontSize: 18, color: 'var(--grey)', fontWeight: 500 }}>
               {word.en}
             </p>
           </div>
@@ -152,8 +172,8 @@ export default function WordDetailModal({
             padding: '8px 12px',
             background: 'var(--gray-light, #F8FAFC)',
             borderRadius: 12,
-            marginTop: 8,
-            marginBottom: 20,
+            marginTop: 6,
+            marginBottom: 16,
             fontSize: 13,
           }}
         >
@@ -188,7 +208,7 @@ export default function WordDetailModal({
         </div>
 
         {/* Tab content */}
-        <div style={{ minHeight: 70, marginBottom: 24 }}>
+        <div style={{ minHeight: 64, marginBottom: 20 }}>
           {activeTab === 'meaning' && (
             <div>
               <p className="text-body" style={{ color: 'var(--grey)' }}>
@@ -226,7 +246,7 @@ export default function WordDetailModal({
         </div>
 
         {/* Practise button */}
-        <div style={{ marginTop: 'auto' }}>
+        <div style={{ marginTop: 'auto', paddingTop: 8 }}>
           <PillButton variant="primary" id="practise-word-btn" onClick={handlePractise}>
             Practise this word
           </PillButton>
