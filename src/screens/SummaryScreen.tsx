@@ -1,15 +1,24 @@
 // ============================================================
 // SummaryScreen.tsx — full-bleed mint session summary per V2
 // ============================================================
-import { useMemo } from 'react';
+import { useState, useMemo } from 'react';
 import { useNavigate, useLocation } from 'react-router-dom';
+import { X, Share2 } from 'lucide-react';
 import PillButton from '../components/PillButton';
 import { useAppStore } from '../store/useAppStore';
 import { getReviewStatus, getTrendMessage } from '../lib/features';
 import { now } from '../lib/clock';
-import { SKILLCASE_DEMO_URL } from '../lib/constants';
+import { SKILLCASE_DEMO_URL, getInviteWhatsAppUrl } from '../lib/copy';
+import { buildUtmUrl, hasSeenAllWords, track } from '../lib/metrics';
+import wordsData from '../../content/words.json';
+import type { Word } from '../lib/types';
 
-interface SummaryResult { wordId: string; correct: boolean }
+const allWords = wordsData as Word[];
+
+interface SummaryResult {
+  wordId: string;
+  correct: boolean;
+}
 
 export default function SummaryScreen() {
   const navigate = useNavigate();
@@ -19,6 +28,9 @@ export default function SummaryScreen() {
 
   const progress = useAppStore((s) => s.progress);
   const sessions = useAppStore((s) => s.sessions);
+  const level = useAppStore((s) => s.level ?? 'A1');
+
+  const [demoDismissed, setDemoDismissed] = useState(false);
 
   const firstTry = results;
   const correctCount = firstTry.filter((r) => r.correct).length;
@@ -31,6 +43,18 @@ export default function SummaryScreen() {
     const prevSessions = sessions.length > 1 ? sessions.slice(1) : [];
     return getTrendMessage(prevSessions, accuracy);
   }, [sessions, accuracy]);
+
+  const allWordsSeen = useMemo(() => hasSeenAllWords(allWords, progress, level), [progress, level]);
+
+  const handleInvitePartner = () => {
+    track('share_clicked', { context: 'invite_study_partner_summary', channel: 'whatsapp' });
+    window.open(getInviteWhatsAppUrl(), '_blank');
+  };
+
+  const demoUrl = useMemo(() => {
+    if (!SKILLCASE_DEMO_URL) return '';
+    return buildUtmUrl(SKILLCASE_DEMO_URL, allWordsSeen ? 'all_words_seen' : 'summary');
+  }, [allWordsSeen]);
 
   return (
     <div className="screen screen--mint" style={{ justifyContent: 'space-between', paddingBottom: 32 }}>
@@ -67,6 +91,23 @@ export default function SummaryScreen() {
         <p className="text-small" style={{ color: 'var(--black)', opacity: 0.85, fontWeight: 600 }}>
           {reviewStatus.message}
         </p>
+
+        {/* All words seen milestone banner if applicable */}
+        {allWordsSeen && (
+          <p
+            className="text-small"
+            style={{
+              background: 'rgba(0, 0, 0, 0.08)',
+              padding: '6px 12px',
+              borderRadius: 14,
+              display: 'inline-block',
+              margin: '12px auto 0',
+              fontWeight: 600,
+            }}
+          >
+            ⭐ You've practised all {level} words!
+          </p>
+        )}
       </div>
 
       <div style={{ padding: '0 var(--side-pad)', display: 'flex', flexDirection: 'column', gap: 12 }}>
@@ -77,23 +118,83 @@ export default function SummaryScreen() {
           Back to home
         </PillButton>
 
-        {SKILLCASE_DEMO_URL ? (
-          <a
-            href={SKILLCASE_DEMO_URL}
-            target="_blank"
-            rel="noopener noreferrer"
+        {/* Invite a study partner */}
+        <button
+          id="invite-partner-summary-btn"
+          onClick={handleInvitePartner}
+          style={{
+            background: 'none',
+            border: 'none',
+            cursor: 'pointer',
+            fontSize: 14,
+            fontWeight: 600,
+            color: 'var(--black)',
+            display: 'inline-flex',
+            alignItems: 'center',
+            justifyContent: 'center',
+            gap: 6,
+            padding: '6px 0',
+            textDecoration: 'underline',
+            textUnderlineOffset: 3,
+          }}
+        >
+          <Share2 size={16} /> Invite a study partner
+        </button>
+
+        {/* Quiet trainer demo link: once per session, dismissible, hidden when empty */}
+        {SKILLCASE_DEMO_URL && !demoDismissed && demoUrl && (
+          <div
+            id="summary-trainer-demo-banner"
             style={{
-              fontSize: 14,
-              color: 'var(--black)',
-              opacity: 0.7,
-              textAlign: 'center',
-              textDecoration: 'underline',
-              marginTop: 8,
+              display: 'flex',
+              alignItems: 'center',
+              justifyContent: 'space-between',
+              background: 'rgba(0, 0, 0, 0.07)',
+              padding: '8px 12px',
+              borderRadius: 16,
+              marginTop: 4,
             }}
           >
-            Learn live with Skillcase
-          </a>
-        ) : null}
+            <a
+              href={demoUrl}
+              target="_blank"
+              rel="noopener noreferrer"
+              id="summary-demo-link"
+              onClick={() =>
+                track('demo_link_clicked', {
+                  placement: allWordsSeen ? 'all_words_seen' : 'summary',
+                  url: demoUrl,
+                })
+              }
+              style={{
+                fontSize: 13,
+                fontWeight: 600,
+                color: 'var(--black)',
+                textDecoration: 'underline',
+                textAlign: 'left',
+              }}
+            >
+              Practise live with a trainer: free demo
+            </a>
+            <button
+              onClick={() => setDemoDismissed(true)}
+              aria-label="Dismiss free demo link"
+              id="dismiss-demo-link-btn"
+              style={{
+                background: 'none',
+                border: 'none',
+                cursor: 'pointer',
+                color: 'var(--black)',
+                opacity: 0.6,
+                padding: 4,
+                display: 'flex',
+                alignItems: 'center',
+              }}
+            >
+              <X size={15} />
+            </button>
+          </div>
+        )}
       </div>
     </div>
   );

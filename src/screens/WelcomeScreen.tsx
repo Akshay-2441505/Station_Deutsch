@@ -4,12 +4,15 @@
 import { useNavigate } from 'react-router-dom';
 import PillButton from '../components/PillButton';
 import { useAppStore } from '../store/useAppStore';
+import { WELCOME_BENEFIT } from '../lib/copy';
+import { track } from '../lib/metrics';
 
 export default function WelcomeScreen() {
   const navigate = useNavigate();
   const loadDemoHistory = useAppStore((s) => s.loadDemoHistory);
 
   const handleTrySample = () => {
+    track('onboarding_completed', { source: 'sample', level: 'A1' });
     loadDemoHistory();
     navigate('/home');
   };
@@ -36,14 +39,28 @@ export default function WelcomeScreen() {
             fontWeight: 700,
             fontSize: 44,
             lineHeight: '48px',
-            marginBottom: 16,
+            marginBottom: 12,
             letterSpacing: '-0.03em',
           }}
         >
           Medical German for nurses.
         </h1>
 
-        <p className="text-body" style={{ fontWeight: 600, marginBottom: 28, fontSize: 18, lineHeight: '26px' }}>
+        {/* Editable one-line benefit from copy.ts */}
+        <p
+          id="welcome-benefit-line"
+          style={{
+            fontSize: 18,
+            lineHeight: '25px',
+            fontWeight: 600,
+            color: 'var(--black)',
+            marginBottom: 14,
+          }}
+        >
+          {WELCOME_BENEFIT}
+        </p>
+
+        <p className="text-body" style={{ fontWeight: 500, marginBottom: 24, fontSize: 16, lineHeight: '24px', opacity: 0.85 }}>
           A1 and A2 words. A few minutes a day.
         </p>
 

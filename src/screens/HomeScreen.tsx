@@ -9,6 +9,8 @@ import { useAppStore } from '../store/useAppStore';
 import { now } from '../lib/clock';
 import { isDue } from '../lib/scheduler';
 import { getTopicStats, buildShareWeakWordsUrl } from '../lib/features';
+import { SKILLCASE_DEMO_URL } from '../lib/copy';
+import { buildUtmUrl, hasSeenAllWords, track } from '../lib/metrics';
 import wordsData from '../../content/words.json';
 import type { Word } from '../lib/types';
 import PillButton from '../components/PillButton';
@@ -64,12 +66,16 @@ export default function HomeScreen() {
 
   const canPractise = Object.values(progress).some((p) => p.box > 0);
   const isCaughtUp = canPractise && dueWords.length === 0;
+  const allWordsSeen = useMemo(() => {
+    return hasSeenAllWords(allWords, progress, level ?? 'A1');
+  }, [progress, level]);
 
   const handleShareWeakWords = () => {
     const weakWordObjects = weakWords
       .map((w) => allWords.find((wd) => wd.id === w.wordId))
       .filter(Boolean) as Word[];
     if (weakWordObjects.length > 0) {
+      track('share_clicked', { context: 'weak_words_whatsapp', channel: 'whatsapp' });
       window.open(buildShareWeakWordsUrl(weakWordObjects), '_blank');
     }
   };
@@ -381,6 +387,33 @@ export default function HomeScreen() {
             Progress <ChevronRight size={18} />
           </button>
         </div>
+
+        {/* Quiet trainer demo link when all words at current level have been seen */}
+        {SKILLCASE_DEMO_URL && allWordsSeen && (
+          <div style={{ marginTop: 14, textAlign: 'center' }}>
+            <a
+              href={buildUtmUrl(SKILLCASE_DEMO_URL, 'all_words_seen')}
+              target="_blank"
+              rel="noopener noreferrer"
+              id="home-all-words-demo-link"
+              onClick={() =>
+                track('demo_link_clicked', {
+                  placement: 'all_words_seen',
+                  url: buildUtmUrl(SKILLCASE_DEMO_URL, 'all_words_seen'),
+                })
+              }
+              style={{
+                fontSize: 13,
+                fontWeight: 600,
+                color: 'var(--black)',
+                opacity: 0.75,
+                textDecoration: 'underline',
+              }}
+            >
+              Practise live with a trainer: free demo
+            </a>
+          </div>
+        )}
       </div>
     </div>
   );

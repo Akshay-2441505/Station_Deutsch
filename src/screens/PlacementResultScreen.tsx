@@ -5,6 +5,7 @@ import { useNavigate, useLocation } from 'react-router-dom';
 import { useAppStore } from '../store/useAppStore';
 import type { PlacementResult } from '../lib/placement';
 import PillButton from '../components/PillButton';
+import { track } from '../lib/metrics';
 
 export default function PlacementResultScreen() {
   const navigate = useNavigate();
@@ -13,6 +14,11 @@ export default function PlacementResultScreen() {
   const level = useAppStore((s) => s.level);
 
   const handleChangeLevel = () => navigate('/choose-level');
+
+  const handleStartLearning = () => {
+    track('onboarding_completed', { source: 'placement', level: level ?? 'A1' });
+    navigate('/home');
+  };
 
   return (
     <div className="screen screen--white">
@@ -41,7 +47,7 @@ export default function PlacementResultScreen() {
       </div>
 
       <div className="action-zone" style={{ position: 'static', background: 'transparent', marginTop: 'auto' }}>
-        <PillButton variant="primary" id="start-learning-btn" onClick={() => navigate('/home')}>
+        <PillButton variant="primary" id="start-learning-btn" onClick={handleStartLearning}>
           Start learning
         </PillButton>
       </div>

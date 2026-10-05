@@ -5,12 +5,14 @@ import { useNavigate } from 'react-router-dom';
 import { useAppStore } from '../store/useAppStore';
 import PillButton from '../components/PillButton';
 import TopBar from '../components/TopBar';
+import { track } from '../lib/metrics';
 
 export default function ChooseLevelScreen() {
   const navigate = useNavigate();
   const setLevel = useAppStore((s) => s.setLevel);
 
   const pick = (level: 'A1' | 'A2') => {
+    track('onboarding_completed', { source: 'manual', level });
     setLevel(level, 'manual');
     navigate('/home');
   };

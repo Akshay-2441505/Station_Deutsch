@@ -35,5 +35,10 @@ export const DESKTOP_TEXT = {
   ],
 };
 
-/** Optional Skillcase link; default empty */
-export const SKILLCASE_DEMO_URL = '';
+export {
+  WELCOME_BENEFIT,
+  APP_URL,
+  SKILLCASE_DEMO_URL,
+  INVITE_PARTNER_MESSAGE,
+  getInviteWhatsAppUrl,
+} from './copy';

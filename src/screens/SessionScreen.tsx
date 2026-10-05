@@ -17,6 +17,7 @@ import PillButton from '../components/PillButton';
 import FeedbackSheet from '../components/FeedbackSheet';
 import UmlautRow from '../components/UmlautRow';
 import ExerciseErrorBoundary from '../components/ExerciseErrorBoundary';
+import { track } from '../lib/metrics';
 
 const allWords = wordsData as Word[];
 const wordMap = Object.fromEntries(allWords.map((w) => [w.id, w]));
@@ -60,6 +61,15 @@ export default function SessionScreen() {
   const [feedback, setFeedback] = useState<FeedbackData | null>(null);
   const [sessionResults, setSessionResults] = useState<Array<{ wordId: string; correct: boolean }>>([]);
   const typedRef = useRef<HTMLInputElement>(null);
+
+  // Track session started event
+  useEffect(() => {
+    track('session_started', {
+      mode: locationState?.pool ? 'targeted' : 'standard',
+      count: items.length,
+      poolSize: locationState?.pool?.length,
+    });
+  }, []);
 
   const currentItem = items[itemIndex];
   const currentWord = currentItem ? wordMap[currentItem.wordId] : null;
@@ -192,6 +202,10 @@ export default function SessionScreen() {
       at: now(),
     });
 
+    if (!isCorrect) {
+      track('mistake_logged', { wordId: currentWord.id, errorType: errorType ?? 'unknown' });
+    }
+
     setSessionResults((r) => [...r, { wordId: currentWord.id, correct: isCorrect }]);
 
     const fb = buildFeedback({
@@ -221,11 +235,17 @@ export default function SessionScreen() {
       const totalAnswered = sessionResults.length;
       const correctCount = sessionResults.filter((r) => r.correct).length;
       const accuracy = totalAnswered > 0 ? Math.round((correctCount / totalAnswered) * 100) : 0;
+      const promoted = sessionResults.filter((r) => r.correct).map((r) => r.wordId);
       recordSessionSummary({
         at: now(),
         accuracy,
         answered: totalAnswered,
-        promotedIds: sessionResults.filter((r) => r.correct).map((r) => r.wordId),
+        promotedIds: promoted,
+      });
+      track('session_completed', {
+        accuracy,
+        answered: totalAnswered,
+        promotedCount: promoted.length,
       });
       navigate('/summary', { state: { results: sessionResults, accuracy } });
     } else {
@@ -313,6 +333,9 @@ export default function SessionScreen() {
         isRetry: currentItem.isRetry,
         at: now(),
       });
+      if (!isCorrect) {
+        track('mistake_logged', { wordId: p.wordId, errorType: 'meaning' });
+      }
       setSessionResults((r) => [...r, { wordId: p.wordId, correct: isCorrect }]);
     });
     handleContinue();
