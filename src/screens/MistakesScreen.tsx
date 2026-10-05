@@ -29,10 +29,32 @@ export default function MistakesScreen() {
   };
 
   return (
-    <div className="screen screen--white">
-      <TopBar variant="back" title="My mistakes" onAction={() => navigate(-1)} />
+    <div
+      className="screen screen--white"
+      style={{
+        padding: 0,
+        height: '100%',
+        maxHeight: '100%',
+        display: 'flex',
+        flexDirection: 'column',
+        position: 'relative',
+        overflow: 'hidden',
+      }}
+    >
+      <div style={{ padding: '0 var(--side-pad)', background: 'var(--white)', flexShrink: 0, borderBottom: '1px solid var(--line)' }}>
+        <TopBar variant="back" title="My mistakes" onAction={() => navigate(-1)} />
+      </div>
 
-      <div className="content" style={{ paddingBottom: 24 }}>
+      <div
+        className="content"
+        style={{
+          flex: 1,
+          overflowY: 'auto',
+          padding: '16px var(--side-pad) 32px',
+          WebkitOverflowScrolling: 'touch',
+          scrollbarWidth: 'none',
+        }}
+      >
         {mistakes.length === 0 ? (
           <div style={{ textAlign: 'center', margin: 'auto 0', padding: '32px 0' }}>
             <p className="text-body" style={{ color: 'var(--grey)' }}>

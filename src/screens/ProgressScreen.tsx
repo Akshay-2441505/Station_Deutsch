@@ -54,11 +54,49 @@ export default function ProgressScreen() {
 
   const maxError = Math.max(...Object.values(errorCounts), 1);
 
-  return (
-    <div className="screen screen--black">
-      <TopBar variant="back" title="Progress" />
+  const handlePractiseWeak = () => {
+    const pool = weakWords.map((w) => w.prog.wordId);
+    navigate('/session', { state: { pool } });
+  };
 
-      <div className="content">
+  return (
+    <div
+      className="screen screen--black"
+      style={{
+        padding: 0,
+        height: '100%',
+        maxHeight: '100%',
+        display: 'flex',
+        flexDirection: 'column',
+        position: 'relative',
+        overflow: 'hidden',
+        background: 'var(--black)',
+      }}
+    >
+      {/* Sticky TopBar */}
+      <div
+        style={{
+          padding: '0 var(--side-pad)',
+          background: 'var(--black)',
+          flexShrink: 0,
+          borderBottom: '1px solid #1A1A1A',
+        }}
+      >
+        <TopBar variant="back" title="Progress" />
+      </div>
+
+      {/* Internal scrollable content */}
+      <div
+        className="content"
+        style={{
+          flex: 1,
+          overflowY: 'auto',
+          padding: '16px var(--side-pad) 32px',
+          background: 'var(--black)',
+          WebkitOverflowScrolling: 'touch',
+          scrollbarWidth: 'none',
+        }}
+      >
         {/* Words by state */}
         <section aria-labelledby="state-heading" style={{ marginBottom: 28 }}>
           <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'baseline', marginBottom: 16 }}>
@@ -140,8 +178,8 @@ export default function ProgressScreen() {
                 </div>
               ))}
             </div>
-            <PillButton variant="on-black" id="practise-weak-btn" onClick={() => navigate('/session')}>
-              Practise these
+            <PillButton variant="on-black" id="practise-weak-btn" onClick={handlePractiseWeak}>
+              Practise these ({weakWords.length})
             </PillButton>
           </section>
         )}
@@ -149,7 +187,7 @@ export default function ProgressScreen() {
         <div className="divider" />
 
         {/* Mistakes by type */}
-        <section aria-labelledby="errors-heading">
+        <section aria-labelledby="errors-heading" style={{ marginBottom: 28 }}>
           <h2 id="errors-heading" className="text-small" style={{ color: 'var(--line)', marginBottom: 12 }}>
             Mistakes by type
           </h2>
@@ -161,13 +199,15 @@ export default function ProgressScreen() {
                   <span className="text-small" style={{ color: 'var(--line)' }}>{count}</span>
                 </div>
                 <div style={{ height: 8, background: '#333', borderRadius: 4 }}>
-                  <div style={{
-                    height: '100%',
-                    background: 'var(--lemon)',
-                    borderRadius: 4,
-                    width: `${(count / maxError) * 100}%`,
-                    transition: 'width 0.4s ease',
-                  }} />
+                  <div
+                    style={{
+                      height: '100%',
+                      background: 'var(--lemon)',
+                      borderRadius: 4,
+                      width: `${(count / maxError) * 100}%`,
+                      transition: 'width 0.4s ease',
+                    }}
+                  />
                 </div>
               </div>
             ))}

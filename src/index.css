@@ -720,6 +720,13 @@ body:has(.screen--coral)  { background: var(--coral); }
     transform: translateZ(0); /* create containing block for fixed positioning */
   }
 
+  /* Match desktop device frame background to active screen color to prevent white edge leakage */
+  .desktop-device-frame:has(.screen--black) { background: var(--black); }
+  .desktop-device-frame:has(.screen--lemon) { background: var(--lemon); }
+  .desktop-device-frame:has(.screen--mint)  { background: var(--mint);  }
+  .desktop-device-frame:has(.screen--coral) { background: var(--coral); }
+  .desktop-device-frame:has(.screen--white) { background: var(--white); }
+
   .desktop-device-frame::-webkit-scrollbar {
     display: none;
   }

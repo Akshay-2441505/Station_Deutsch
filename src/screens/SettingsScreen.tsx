@@ -100,10 +100,41 @@ export default function SettingsScreen() {
   };
 
   return (
-    <div className="screen screen--white" style={{ position: 'relative' }}>
-      <TopBar variant="back" title="Settings" />
+    <div
+      className="screen screen--white"
+      style={{
+        padding: 0,
+        height: '100%',
+        maxHeight: '100%',
+        display: 'flex',
+        flexDirection: 'column',
+        position: 'relative',
+        overflow: 'hidden',
+      }}
+    >
+      {/* Sticky TopBar */}
+      <div
+        style={{
+          padding: '0 var(--side-pad)',
+          background: 'var(--white)',
+          flexShrink: 0,
+          borderBottom: '1px solid var(--line)',
+        }}
+      >
+        <TopBar variant="back" title="Settings" />
+      </div>
 
-      <div className="content" style={{ paddingBottom: 32 }}>
+      {/* Scrollable content */}
+      <div
+        className="content"
+        style={{
+          flex: 1,
+          overflowY: showMetrics ? 'hidden' : 'auto',
+          padding: '16px var(--side-pad) 32px',
+          WebkitOverflowScrolling: 'touch',
+          scrollbarWidth: 'none',
+        }}
+      >
         {/* Level */}
         <section aria-labelledby="level-heading" style={{ marginBottom: 28 }}>
           <h2 id="level-heading" className="text-title" style={{ marginBottom: 16 }}>Level</h2>
@@ -278,7 +309,7 @@ export default function SettingsScreen() {
         </section>
       </div>
 
-      {/* Prototype Metrics Modal */}
+      {/* Prototype Metrics Modal (Docked cleanly at bottom as bottom sheet) */}
       {showMetrics && (
         <div
           role="dialog"
@@ -287,12 +318,13 @@ export default function SettingsScreen() {
           style={{
             position: 'absolute',
             inset: 0,
-            background: 'rgba(0, 0, 0, 0.6)',
+            background: 'rgba(0, 0, 0, 0.65)',
             zIndex: 100,
             display: 'flex',
             flexDirection: 'column',
             justifyContent: 'flex-end',
             backdropFilter: 'blur(2px)',
+            overflow: 'hidden',
           }}
           onClick={(e) => {
             if (e.target === e.currentTarget) setShowMetrics(false);
@@ -303,12 +335,15 @@ export default function SettingsScreen() {
               background: 'var(--white)',
               borderTopLeftRadius: 28,
               borderTopRightRadius: 28,
+              borderBottomLeftRadius: 0,
+              borderBottomRightRadius: 0,
               padding: '24px 20px calc(24px + env(safe-area-inset-bottom, 0px))',
               maxHeight: '85%',
               overflowY: 'auto',
-              boxShadow: '0 -10px 40px rgba(0, 0, 0, 0.25)',
+              boxShadow: '0 -10px 40px rgba(0, 0, 0, 0.35)',
               display: 'flex',
               flexDirection: 'column',
+              animation: 'slideUp 0.22s cubic-bezier(0.16, 1, 0.3, 1)',
             }}
           >
             <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: 12 }}>
