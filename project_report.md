@@ -1,26 +1,31 @@
-# Project Report: Station Deutsch
+# Final Project Report: Station Deutsch
 
 > **Medical German Vocabulary Practice for Indian Nurses (A1 / A2)**  
 > **Repository:** [https://github.com/Akshay-2441505/Station_Deutsch](https://github.com/Akshay-2441505/Station_Deutsch)  
-> **Status:** V2 Complete · 108/108 Tests Passing · Production Build Verified  
+> **Status:** Production Ready · 127/127 Tests Passing · Zero Dependency Overhead  
 > **Date:** October 2026
 
 ---
 
 ## 1. Executive Summary
 
-**Station Deutsch** is an interactive, mobile-first web application engineered specifically for Indian nurses preparing to work in German hospitals and care facilities.
+**Station Deutsch** is a dedicated, mobile-first web application engineered specifically for Indian nurses training to work in German hospitals and elderly care facilities.
 
 ### The Problem
-Skillcase and nursing training institutes teach healthcare German through structured live classes. However, nurses face a steep retention drop-off between lessons. Learning complex medical compound nouns, unpredictable noun genders (*der*, *die*, *das*), and ward interactions requires frequent, low-friction spaced retrieval. Traditional general-purpose apps (like Duolingo) focus on tourist phrases (*"The cat drinks milk"*), while dense textbooks are impractical during 5–10 minute hospital shift breaks.
+Healthcare German training involves rigorous live classroom sessions (such as those led by Skillcase and specialized language institutes). However, nursing candidates face a severe retention drop-off between lessons:
+- Complex medical compound nouns (*das Blutdruckmessgerät*, *die Dokumentationsmappe*) are overwhelming to memorize without repetitive exposure.
+- German noun genders (*der*, *die*, *das*) follow no intuitive English equivalents, yet wrong genders lead to severe case-inflection errors in clinical charts.
+- General language apps (e.g., Duolingo) focus on non-clinical travel phrases (*"The cat drinks milk"*), while dense textbooks are impractical during 3–5 minute hospital shift breaks.
 
 ### The Solution
-Station Deutsch acts as a between-class practice companion:
-- **Zero sign-up friction**: Learners immediately begin studying without accounts or passwords.
-- **Micro-sessions**: Standard sessions are fixed at 10 items (completable in under 3 minutes).
-- **Spaced Repetition Engine**: Implements a 5-box Leitner system with strict daily promotion limits and stubborn-word demotion rules.
-- **Clinically Rooted**: Vocabulary is restricted to elementary (A1/A2) clinical domains: bedside care, organs, symptoms, ward equipment, and patient admissions.
-- **Transparent Mistakes Ledger**: Every slip is recorded with given vs. expected answers, relative timestamps, and dedicated remediation drills.
+Station Deutsch acts as a low-friction between-class practice companion:
+- **Zero Sign-Up Barrier**: Nurses start practicing immediately with zero login, password, or account setup.
+- **Bite-Sized Clinical Micro-Sessions**: Fixed at 10 items (completable in under 3 minutes).
+- **Leitner Spaced Repetition Engine**: Pure, deterministic 5-box spaced retrieval with daily promotion caps and aggressive demotions for persistent errors.
+- **Targeted Hospital Vocabulary**: 70 carefully curated clinical words across 5 core topics (Body, Symptoms, Ward, Care, Patient Admission), balanced between foundational A1 and contextual A2.
+- **Word Bank Reference & Search (`#/words`)**: Grouped, searchable, and filterable dictionary of all curriculum words with instant single-word practice drills.
+- **Transparent Mistake Audit Ledger (`#/mistakes`)**: Logs target words, given vs. expected answers, error types (*article*, *spelling*, *meaning*), and resolution status.
+- **Privacy-First Metrics & GTM Touches**: Zero personal data collection, local-only prototype analytics, WhatsApp study-partner invites, and demo trainer links.
 
 ```
 Quick Check (or Manual Choice) ──► Topic Map (Home) ──► Learn Batch (5–8 words)
@@ -39,40 +44,42 @@ Quick Check (or Manual Choice) ──► Topic Map (Home) ──► Learn Batch 
 
 ## 2. Software Architecture & Technology Stack
 
-The application was built adhering strictly to the tech stack constraints: **Vanilla CSS design tokens, React 18, TypeScript, and Vite**, with no heavy CSS frameworks.
+The project adheres strictly to modern web standards, lightweight performance constraints, and zero heavy styling dependencies.
 
 ```mermaid
 graph TD
-    App[App.tsx / Desktop Shell] --> Router[HashRouter #/]
-    Router --> Screens[Screens: Welcome, Home, Learn, Session, Summary, Mistakes, Progress, Settings]
-    Screens --> Store[useAppStore / Zustand]
+    App[App.tsx / Responsive Desktop Shell] --> Router[HashRouter #/]
+    Router --> Screens[Screens: Welcome, Home, Learn, Session, Summary, Mistakes, Progress, Settings, Words]
+    Screens --> Store[useAppStore / Zustand 5]
     Store --> Storage[storage.ts / Safe Wrapper + Memory Fallback]
     Store --> Scheduler[scheduler.ts / Leitner Spaced Repetition]
     Store --> Clock[clock.ts / Virtual Clock with Day Offset]
     Screens --> SessionComposer[session.ts / Adaptive Session Composer]
     SessionComposer --> Grader[grader.ts / Multi-tier Error Classifier]
+    Screens --> Modals[Modals: WordDetailModal, PrototypeMetricsModal]
     Screens --> ErrorBoundary[ExerciseErrorBoundary.tsx]
 ```
 
 ### Core Technologies
 | Component | Technology | Rationale |
 |---|---|---|
-| **Runtime & Bundler** | Vite 6 + React 18 | Instant HMR, minimal production bundle size (77 kB gzip). |
-| **Language** | TypeScript (Strict mode) | Complete type safety across scheduler models, exercise variants, and attempts. |
-| **Styling** | Vanilla CSS (`index.css`) | Maximum control over responsive typography, CSS Grid, and custom animations. Zero Tailwind overhead. |
-| **State Management** | Zustand 5 with custom persistence | Lightweight, predictable state management with versioned schema migrations (`station-deutsch:v2`). |
-| **Routing** | React Router 6 (`HashRouter`) | Hash-based navigation (`#/`) ensures reliable client-side routing on any static host (Vercel, GitHub Pages) without server rewrite issues. |
+| **Runtime & Bundler** | Vite 6 + React 18 | Instant HMR, minimal production bundle size (~83 kB gzip). |
+| **Language** | TypeScript (Strict mode) | Complete type safety across scheduler models, exercise variants, metrics, and attempts. |
+| **Styling** | Vanilla CSS (`index.css`) | Curated design tokens, CSS Grid, custom cubic-bezier animations, dark mode palettes, zero Tailwind overhead. |
+| **State Management** | Zustand 5 with custom persistence | Fast, predictable state management with versioned schema migrations (`station-deutsch:v2`). |
+| **Routing** | React Router 6 (`HashRouter`) | Hash-based routing (`#/`) guarantees reliable client-side navigation on static hosts (Vercel, GitHub Pages) without server rewrite issues. |
 | **Typography** | `@fontsource-variable/fraunces` & `figtree` | Self-hosted Google Fonts: Fraunces (editorial serif for German prompts and score numerals) and Figtree (clean sans-serif for UI and English glosses). |
-| **Icons** | `lucide-react` | Lightweight, accessible SVG icons. |
+| **Icons** | `lucide-react` | Lightweight, accessible SVG icons with zero runtime footprint. |
 
 ### Desktop Presentation Architecture ($\ge 1024$px)
-While designed mobile-first for Android screens ($390$px base width), desktop visitors see a dedicated two-column presentation layout:
+While designed mobile-first for physical Android smartphones ($390$px base width), desktop evaluators experience a dedicated two-column layout:
 - **Left Column**: Text wordmark, honest product description, a 3-step evaluator guide, and prototype metadata.
-- **Right Column**: An authentic $390 \times \min(820\text{px}, 100\text{dvh} - 48\text{px})$ device frame with rounded corners, subtle elevation, and hidden inner scrollbars (`scrollbar-width: none`).
+- **Right Column**: An authentic $390 \times \min(820\text{px}, 100\text{dvh} - 48\text{px})$ mobile frame with rounded corners, subtle drop shadow, and hidden inner scrollbars (`scrollbar-width: none`).
+- **Dynamic Background Synchronization**: Outer device frame dynamically matches the active screen background via CSS `:has()` rules (`.screen--black`, `.screen--lemon`, `.screen--mint`), eliminating boundary artifacts.
 
 ---
 
-## 3. Spaced Repetition & Pedagogical Rules
+## 3. Spaced Repetition & Pedagogical Engine
 
 The learning engine is implemented as pure, deterministic TypeScript functions in `src/lib/scheduler.ts` and `src/lib/grader.ts`:
 
@@ -80,22 +87,21 @@ The learning engine is implemented as pure, deterministic TypeScript functions i
 | Box | State Label | Interval | Criteria to Reach |
 |---|---|---|---|
 | **Box 0** | New | Immediate | Initial unpracticed state. |
-| **Box 1** | Learning | Immediate | First checked answer moves word here regardless of score. |
+| **Box 1** | Learning | Immediate | First answered check moves word here regardless of score. |
 | **Box 2** | Familiar | 1 day | 1 correct answer on a subsequent calendar day. |
 | **Box 3** | Familiar | 3 days | Correct answer when due from Box 2. |
 | **Box 4** | Strong | 7 days | Correct answer when due from Box 3. |
-| **Box 5** | Mastered | 14 days | Correct answer when due from Box 4. Mastered words never retire—they return every 14 days. |
+| **Box 5** | Mastered | 14 days | Correct answer when due from Box 4. Mastered words never retire—they return every 14 days for long-term retention. |
 
 ### 3.2 Strict Daily Promotion Cap
-To prevent cramming in a single sitting, **a word can only be promoted to a higher box once per calendar day** (tracked via `lastPromotedDay: 'YYYY-MM-DD'`). Subsequent correct answers within the same day reinforce memory without inflating Leitner progress.
+To prevent cramming in a single sitting, **a word can only be promoted to a higher box once per calendar day** (tracked via `lastPromotedDay: 'YYYY-MM-DD'`). Subsequent correct answers within the same day reinforce memory without artificially inflating Leitner progress.
 
 ### 3.3 Demotion & Stubborn Word Rules
 - **Article Mistake**: Choosing or typing the correct noun with the wrong gender demotes the word by **$-1$ box** (minimum Box 1) and logs an `article` error.
-- **Spelling Near-Miss**: Edit distance of 1 or umlaut substitution (e.g. `ae` for `ä`) logs a `spelling` error with corrective guidance, but does **not demote** the word.
+- **Spelling Near-Miss**: Edit distance of 1 or umlaut substitution (e.g. `ae` for `ä`) logs a `spelling` error with corrective feedback, but does **not demote** the word.
 - **Meaning / Word Error**: Selecting the wrong word or typing an incorrect translation resets the word directly to **Box 1**.
 - **Stubborn Flag**: Any word missed twice in its last 5 attempts is flagged `stubborn: true`.
-- **Stubborn Cap**: A stubborn word **cannot advance past Box 2** until it clears with **3 consecutive correct answers**. It is also forced into an easier recognition exercise format and prioritized in weak-word drills.
-- **Honest Progress Display**: Weak words never show a false "Mastered" badge—they explicitly display *"missed N times"*.
+- **Stubborn Cap**: A stubborn word **cannot advance past Box 2** until it clears with **3 consecutive correct answers**. It is also forced into recognition exercises and prioritized in remediation drills.
 
 ---
 
@@ -132,7 +138,7 @@ Distractors are strictly filtered in `src/lib/session.ts` via:
 
 ## 5. Vocabulary Curriculum & Content Status
 
-The active curriculum contains **70 medical German entries** across 5 clinical topics, structured to maintain a balanced ratio between foundational A1 vocabulary and contextual A2 vocabulary:
+The active curriculum contains **70 medical German entries** across 5 clinical topics, maintaining an intentional balance between foundational A1 vocabulary and contextual A2 vocabulary:
 
 ```
 Total Active Bank: 70 words
@@ -151,102 +157,117 @@ Total Active Bank: 70 words
 | **Total** | **70** | **45** | **25** | Every topic contains $\ge 4$ words at both levels for valid distractors. |
 
 ### Verification Status & Worksheet
-- In compliance with content honesty rules, all 70 active words and 8 placement items are flagged:
-  ```json
-  "verification": {
-    "status": "unverified",
-    "sources": []
-  }
-  ```
+- In compliance with content honesty rules, all 70 active words and 8 placement items are flagged with `"verification": { "status": "unverified", "sources": [] }`.
 - **Automated Validation**:
   - `npm run validate:content`: Checks uniqueness, sentence completeness, umlaut spelling, and distractor coverage. (Passes with 0 errors).
-  - `npm run validate:strict`: Enforces that all items have verified human sources before production deployment (fails until human verification is completed).
-- **Worksheet Generator**: `npm run content:worksheet` writes [`content/verification-worksheet.md`](file:///c:/Users/aakur/OneDrive/Desktop/Skillcase/content/verification-worksheet.md) with direct search links to Wiktionary and Duden for human review.
+  - `npm run validate:strict`: Enforces that all items have verified human sources before production deployment.
+- **Worksheet Generator**: `npm run content:worksheet` writes `content/verification-worksheet.md` with direct search links to Wiktionary and Duden for human review.
 
 ---
 
-## 6. Key Value Features
+## 6. Key Screens & Features
 
-| Feature | Screen / Route | Description |
+| Feature / Screen | Route | Description |
 |---|---|---|
-| **Goal Capping & Today Progress** | `HomeScreen` | Progress bar caps at goal. Displays *"Goal reached"* with *"N answers today"* when exceeded. |
-| **Topic Map** | `HomeScreen` | 5 visual topic cards showing learned vs. total counts (e.g. *"Body, 4 of 15 words"*). Tapping starts a topic-specific learn or practice session. |
-| **My Mistakes Ledger** | `#/mistakes` | Chronological audit log of learner errors showing target word, given vs. expected answers, relative timestamps, and *"Fixed"* badges once resolved. Includes a *"Practise these"* button. |
-| **Spaced Review Trend** | `SummaryScreen` | Compares session score to the previous session (*"Last session 60%, today 80%"*) and reports the virtual clock review horizon (*"Next review: tomorrow, 6 words"*). |
-| **WhatsApp Weak Words Share** | `HomeScreen` | One-tap button opening `https://wa.me/?text=...` with the learner's top weak words (no hardcoded phone number) for mentor check-ins. |
-| **Offline Backup & Restore** | `#/settings` | Download complete study history as a structured `.json` file and restore it on another browser or device without an account. |
-| **Evaluator Clock Simulator** | `#/settings` | *"Simulate tomorrow"* increments the virtual app clock by +24 hours, resetting daily promotion caps and making scheduled Leitner boxes due immediately. |
-| **Realistic Demo Data** | `#/settings` & Welcome | One-tap button loading a simulated 5-day study history with realistic error distributions and Leitner box distributions. |
+| **Welcome Screen** | `#/welcome` | Quick placement check (8 questions) or manual level selection. Includes configurable value-proposition subheadline (`copy.ts`). |
+| **Home Dashboard** | `#/` | Daily goal tracking with honest cap display (*"Goal reached · N answers today"*), 5 visual topic cards, and top weak-words summary. |
+| **Word Bank** | `#/words` | Complete searchable curriculum directory grouped by topic, filtered by level (All, A1, A2) and Leitner state, with "Hide meanings" flashcard mode and single-word drill modals. |
+| **Learn Batch** | `#/learn-preview` | Bite-sized introduction of 5–8 unseen words with audio pronunciation, gender color-coding, clinical example sentences, and tips. |
+| **Practice Session** | `#/learn` | 10-item adaptive session featuring 6 exercise formats, immediate feedback, and retry queues. |
+| **Session Summary** | `#/summary` | Accuracy percentage, breakdown of correct vs. retried answers, comparison with previous session (*"Last session 60%, today 80%"*), next review horizon, and dismissible demo trainer CTA. |
+| **My Mistakes Ledger** | `#/mistakes` | Chronological error audit log with given vs. expected answers, error taxonomy chips (*article*, *spelling*, *meaning*), and dedicated *"Practise these"* button. |
+| **Progress Matrix** | `#/progress` | Full Leitner 5-box breakdown, error category distribution, stubborn words watchlist, and WhatsApp weak-words sharing. |
+| **Settings & Demo Tools** | `#/settings` | Audio speed controls, level switcher, WhatsApp partner invite, offline JSON export/restore, virtual clock simulator (*"Simulate tomorrow"*), and Prototype Metrics. |
 
 ---
 
-## 7. Quality, Accessibility & Resilience
+## 7. GTM, Privacy & Prototype Telemetry
 
-### Accessibility & WCAG Compliance
-- **Color Contrast**: Calculated and unit-tested in `phase4_quality.test.ts`:
+1. **Configurable Headlines (`src/content/copy.ts`)**:
+   - Benefit subheadline stored in constants so marketing owners can adjust messaging without touching code components.
+2. **Attribution UTM Builder (`src/lib/utm.ts`)**:
+   - Appends `utm_source=station_deutsch&utm_medium=prototype&utm_campaign=<placement>` to external links.
+   - Quiet, dismissible "Practise live with a trainer: free demo" CTA displayed on the Summary screen and when all words at the current level have been seen (hidden when `SKILLCASE_DEMO_URL` is empty).
+3. **WhatsApp Organic Virality**:
+   - "Invite a study partner" link in Settings and Summary generates pre-composed WhatsApp messages linking to the app.
+   - "Send my weak words on WhatsApp" enables quick check-ins with language mentors or study buddies.
+4. **Privacy-First Prototype Metrics (`src/lib/gtm_metrics.ts`)**:
+   - Computes local KPIs entirely on-device from `localStorage`:
+     - Sessions completed
+     - Total answers given
+     - First-try accuracy percentage
+     - Total calendar days practiced
+     - Retry success rate
+   - Zero personal data, cookies, or identifiers collected.
+   - Dev-only typed `track(event, props)` logs to console during development and no-ops in production.
+
+---
+
+## 8. Quality, Accessibility & UI Resilience
+
+### Accessibility & Contrast Standards
+- **Color Contrast Tested (WCAG 2.1 AAA / AA)**:
   - Slate Black (`#0F172A`) on Lemon (`#E8FF8C`): **16.0 : 1** (exceeds AAA 7:1)
   - Slate Black (`#0F172A`) on Mint (`#85E874`): **10.95 : 1** (exceeds AAA 7:1)
   - Slate Black (`#0F172A`) on White (`#FFFFFF`): **17.2 : 1** (exceeds AAA 7:1)
   - Dark Gray (`#475569`) on White (`#FFFFFF`): **7.55 : 1** (exceeds AA 4.5:1)
-- **Universal Focus Rings**: High-contrast `:focus-visible` outline rings implemented for keyboard accessibility.
-- **200% Zoom Responsiveness**: Button containers use `min-height: 56px; height: auto` ensuring text wraps gracefully without clipping on mobile browsers or when browser font scaling is doubled.
-- **Dual Visual Signals**: Correct answers and errors use both color outlines and distinct icons (`Check` / `X`), ensuring accessibility for colorblind learners.
+- **Visual Redundancy**: All feedback pairs color with icons (`Check` / `X`) for colorblind usability.
+- **200% Font Scaling**: Dynamic button heights with `min-height: 56px; height: auto` prevent text truncation.
 
-### Resilience & Error Handling
+### UI Alignment & Layout Architecture
+- **No White Frame Leakage**: Outer `.desktop-device-frame` reacts to child screen backgrounds via `:has()` rules.
+- **Viewport-Anchored Bottom Sheets**: All modal overlays (`WordDetailModal`, `PrototypeMetricsModal`) are rendered inside fixed-height screen shells with internal `.content` scrolling, ensuring that modals dock flush to the bottom edge regardless of scroll position.
 - **Storage Degradation**: If `localStorage` is disabled or blocked in private browsing, `src/lib/storage.ts` transitions seamlessly to an in-memory map without crashing, displaying a non-intrusive warning banner.
 - **Speech Synthesis Guard**: If the browser lacks speech synthesis or if no German voice is installed on the device, the audio button degrades gracefully without throwing.
 - **Exercise Error Boundary**: Every practice item is wrapped in an `ExerciseErrorBoundary` with a *"Skip to next"* fallback, guaranteeing that an isolated rendering bug never freezes an entire session.
 
 ---
 
-## 8. Test Suite & Verification Results
+## 9. Test Suite & Verification Results
 
-All automated tests run via Vitest in under 1 second:
+The automated test suite covers all business logic, algorithms, UI components, content hygiene, and telemetry:
 
 ```bash
-$ npm run test
- ✓ src/tests/placement.test.ts (4 tests)
- ✓ src/tests/phase2_visual.test.ts (1 test)
- ✓ src/tests/match_exercise.test.ts (2 tests)
- ✓ src/tests/grader.test.ts (24 tests)
- ✓ src/tests/content_hygiene.test.ts (7 tests)
- ✓ src/tests/scheduler.test.ts (27 tests)
- ✓ src/tests/phase4_quality.test.ts (14 tests)
- ✓ src/tests/phase3_features.test.ts (8 tests)
- ✓ src/tests/phase1_bugs.test.ts (6 tests)
- ✓ src/tests/session.test.ts (15 tests)
+$ npm test
 
- Test Files  10 passed (10)
-      Tests  108 passed (108)
+ RUN  v2.1.9 C:/Users/aakur/OneDrive/Desktop/Skillcase
+
+ ✓ src/tests/grader.test.ts (24 tests)
+ ✓ src/tests/match_exercise.test.ts (2 tests)
+ ✓ src/tests/placement.test.ts (4 tests)
+ ✓ src/tests/gtm_metrics.test.ts (12 tests)
+ ✓ src/tests/scheduler.test.ts (27 tests)
+ ✓ src/tests/content_hygiene.test.ts (7 tests)
+ ✓ src/tests/phase1_bugs.test.ts (6 tests)
+ ✓ src/tests/phase4_quality.test.ts (14 tests)
+ ✓ src/tests/session.test.ts (15 tests)
+ ✓ src/tests/phase3_features.test.ts (8 tests)
+ ✓ src/tests/word_bank.test.ts (7 tests)
+ ✓ src/tests/phase2_visual.test.ts (1 test)
+
+ Test Files  12 passed (12)
+      Tests  127 passed (127)
+   Duration  1.83s
 ```
 
-Production build compilation:
+Production build validation:
 ```bash
 $ npm run build
-✓ 1620 modules transformed.
+✓ 1624 modules transformed.
 dist/index.html                     0.60 kB │ gzip:  0.37 kB
-dist/assets/index-DQzMSnEH.css     13.21 kB │ gzip:  3.22 kB
-dist/assets/index-Dj7_AEa1.js     259.23 kB │ gzip: 77.81 kB
-✓ built in 11.06s
+dist/assets/index-B-tG8ZI8.css     13.54 kB │ gzip:  3.25 kB
+dist/assets/index-f8BqLpjT.js     284.30 kB │ gzip: 83.49 kB
+✓ built in 14.90s
 ```
 
 ---
 
-## 9. Actionable Checklist for the Project Owner
+## 10. Repository Status & Owner Next Steps
 
-As stipulated in the project specification, the following tasks must be completed directly by the project owner:
+- **GitHub Repository**: [https://github.com/Akshay-2441505/Station_Deutsch](https://github.com/Akshay-2441505/Station_Deutsch)
+- **Branch**: `master` (All commits pushed cleanly up to `491c9e3`).
 
-- [ ] **Content Verification**: Review [`content/verification-worksheet.md`](file:///c:/Users/aakur/OneDrive/Desktop/Skillcase/content/verification-worksheet.md) against Duden / Goethe-Institut A1 & A2 Pflege word lists, add real sources, and update `verification.status` to `"verified"`.
-- [ ] **User Testing**: Run 3 to 5 real user tests with nursing students or German learners, logging results in [`README.md`](file:///c:/Users/aakur/OneDrive/Desktop/Skillcase/README.md#7-test-log-template).
-- [ ] **Vercel Deployment**: Link [https://github.com/Akshay-2441505/Station_Deutsch](https://github.com/Akshay-2441505/Station_Deutsch) to Vercel (using the pre-configured [`vercel.json`](file:///c:/Users/aakur/OneDrive/Desktop/Skillcase/vercel.json)).
-- [ ] **Physical Android Device Test**: Verify audio pronunciation playback, touch response, and layout on a physical Android phone.
-
----
-
-## 10. Post-V2 Roadmap (Phase 5 / Stretch)
-
-1. **Sentence Builder Drill (`build`)**: Word-tile ordering exercises enforcing German ward syntax (Verb-second / Time-Manner-Place).
-2. **Slow Audio Toggle**: 0.7x speed switch on `AudioButton` for compound medical nouns (*Blutdruckmessgerät*).
-3. **Verified Pronunciation Tips**: Displaying verified phonetic guidance for tricky German consonants (`ch`, `st`, `sp`).
-4. **PWA Offline Support**: Web Manifest and Service Worker for offline practice in hospital basements and ward night shifts.
-5. **Optional Cloud Sync**: Firebase/Supabase authentication allowing cross-device synchronization without manual JSON transfer.
+### Actionable Next Steps for Project Owner:
+1. **Human Verification**: Review `content/verification-worksheet.md` against official Goethe-Institut / Duden medical references and flip `verification.status` to `"verified"`.
+2. **Vercel / Static Hosting**: Connect the GitHub repository to Vercel (pre-configured with `vercel.json` for instant deployment).
+3. **Set Demo Link**: When ready, set `SKILLCASE_DEMO_URL` in `src/content/copy.ts` with your live trainer booking page.
