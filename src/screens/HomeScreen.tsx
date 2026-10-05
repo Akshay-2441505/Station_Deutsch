@@ -323,7 +323,26 @@ export default function HomeScreen() {
         )}
 
         {/* Links row */}
-        <div style={{ display: 'flex', gap: 24, marginTop: 'auto', paddingTop: 16 }}>
+        <div style={{ display: 'flex', gap: 20, marginTop: 'auto', paddingTop: 16, flexWrap: 'wrap' }}>
+          <button
+            className="text-button"
+            style={{
+              background: 'none',
+              border: 'none',
+              cursor: 'pointer',
+              color: 'var(--grey)',
+              textAlign: 'left',
+              display: 'inline-flex',
+              alignItems: 'center',
+              gap: 4,
+              padding: 0,
+            }}
+            id="words-link"
+            onClick={() => navigate('/words')}
+          >
+            Word bank <ChevronRight size={18} />
+          </button>
+
           <button
             className="text-button"
             style={{

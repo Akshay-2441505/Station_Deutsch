@@ -16,6 +16,7 @@ The app addresses:
 - **Desktop presentation container**: On viewports $\ge 1024$px, displays an authentic $390 \times 820$ px phone mockup with contextual learning notes in the left column.
 - **Ward Context & Topic Map**: Top-level topic cards on Home showing learned vs total counts, and clinical topic labels on all exercise and learn screens.
 - **Mistakes Ledger (`#/mistakes`)**: Persistent log of learner slips with given vs expected answers, relative timestamps, fixed badges, and targeted "Practise these" drills.
+- **Word Bank (`#/words`)**: Interactive clinical dictionary grouped by ward topic with German/English search, level/state filters, article chips, "Hide meanings" self-test toggle, and instant 1-word focused practice drills (`composeSession({ pool: [id] })`).
 - **Data Portability & WhatsApp Sharing**: Instant WhatsApp sharing of weak words with mentors/colleagues, and offline JSON progress download and restoration.
 
 ---

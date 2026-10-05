@@ -2,7 +2,8 @@
 // features.ts — helper functions for Phase 3 Value Features
 // ============================================================
 
-import type { Word, WordProgress, Attempt, SessionSummary, Level, Topic, AppState } from './types';
+import type { Word, WordProgress, Attempt, SessionSummary, Level, Topic, AppState, WordState } from './types';
+import { stateLabel } from './types';
 import { isDue } from './scheduler';
 
 export interface ReviewStatus {
@@ -235,4 +236,65 @@ export function validateImportedProgress(
       error: `Invalid JSON format: ${err instanceof Error ? err.message : 'Syntax error'}`,
     };
   }
+}
+
+export interface WordFilterCriteria {
+  query?: string;
+  level?: Level | 'all';
+  state?: WordState | 'all';
+}
+
+export interface TopicGroup {
+  topic: Topic;
+  title: string;
+  words: Word[];
+}
+
+/**
+ * Filter words by search query, level, and Leitner learning state.
+ */
+export function filterWords(
+  words: Word[],
+  progress: Record<string, WordProgress>,
+  criteria: WordFilterCriteria,
+): Word[] {
+  const q = (criteria.query ?? '').trim().toLowerCase();
+  const lvl = criteria.level ?? 'all';
+  const st = criteria.state ?? 'all';
+
+  return words.filter((word) => {
+    // 1. Level filter
+    if (lvl !== 'all' && word.level !== lvl) return false;
+
+    // 2. State filter
+    const prog = progress[word.id];
+    const box = prog?.box ?? 0;
+    const currentWordState = stateLabel(box);
+    if (st !== 'all' && currentWordState !== st) return false;
+
+    // 3. Search query filter (matches German headword, with-article phrase, or English meaning)
+    if (q) {
+      const matchDe = word.de.toLowerCase().includes(q);
+      const matchEn = word.en.toLowerCase().includes(q);
+      const matchArticle = word.article ? `${word.article} ${word.de}`.toLowerCase().includes(q) : false;
+      if (!matchDe && !matchEn && !matchArticle) return false;
+    }
+
+    return true;
+  });
+}
+
+/**
+ * Group words by topic in standard clinical order.
+ */
+export function groupWordsByTopic(words: Word[]): TopicGroup[] {
+  const topics: Topic[] = ['body', 'symptoms', 'care', 'ward', 'patient'];
+
+  return topics
+    .map((t) => ({
+      topic: t,
+      title: TOPIC_TITLES[t] ?? t,
+      words: words.filter((w) => w.topic === t),
+    }))
+    .filter((g) => g.words.length > 0);
 }
